@@ -1,0 +1,1101 @@
+<!-- dashboard/templates/predicciones.html -->
+{% extends "base.html" %}
+
+{% block title %}Predicciones - Bio-Invernadero{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-color: #2e7d32;
+    --secondary-color: #4caf50;
+    --warning-color: #ff9800;
+    --danger-color: #f44336;
+    --info-color: #2196f3;
+    --rabano-color: #e91e63;
+    --cilantro-color: #9c27b0;
+}
+
+[data-bs-theme="dark"] {
+    --card-bg: #2d3748;
+    --text-color: #e2e8f0;
+    --border-color: #4a5568;
+}
+
+[data-bs-theme="light"] {
+    --card-bg: #ffffff;
+    --text-color: #2d3748;
+    --border-color: #e2e8f0;
+}
+
+.predictions-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.predictions-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translateX(0) translateY(0); }
+    100% { transform: translateX(-100px) translateY(-100px); }
+}
+
+/* Tarjetas de predicción mejoradas */
+.prediction-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.prediction-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: none;
+}
+
+.prediction-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+}
+
+.prediction-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
+
+.prediction-card.rabano {
+    background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%);
+}
+
+.prediction-card.cilantro {
+    background: linear-gradient(135deg, #9c27b0 0%, #6a1b9a 100%);
+}
+
+.risk-factor {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    margin: 0.25rem;
+    display: inline-block;
+    font-size: 0.8rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.confidence-bar {
+    height: 12px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 6px;
+    margin: 15px 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4caf50, #8bc34a);
+    border-radius: 6px;
+    transition: width 1s ease-in-out;
+    position: relative;
+}
+
+.confidence-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Métricas de resumen */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Contenedores de gráficos */
+.chart-container {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+
+.chart-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.timeframe-buttons .btn {
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+}
+
+/* Estados de carga */
+.loading-spinner {
+    text-align: center;
+    padding: 3rem;
+    color: #6b7280;
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+    height: 1.5rem;
+    width: 60%;
+    margin-bottom: 1rem;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Indicadores de tendencia */
+.trend-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+.trend-up {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.trend-down {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.trend-stable {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* Alertas de predicción */
+.prediction-alert {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border: 1px solid #ffecb5;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #856404;
+}
+
+.prediction-alert.critical {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .predictions-header {
+        padding: 1.5rem 0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .prediction-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .prediction-card {
+        padding: 1.5rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .chart-container {
+        padding: 1.5rem;
+    }
+    
+    .chart-wrapper {
+        height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .prediction-card {
+        padding: 1.25rem;
+    }
+    
+    .chart-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .timeframe-buttons {
+        display: flex;
+        justify-content: center;
+    }
+}
+
+/* Modo oscuro mejorado */
+[data-bs-theme="dark"] .stat-card,
+[data-bs-theme="dark"] .chart-container {
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+[data-bs-theme="dark"] .stat-label {
+    color: #9ca3af;
+}
+
+[data-bs-theme="dark"] .prediction-alert {
+    background: linear-gradient(135deg, #453411, #342308);
+    border-color: #66512c;
+    color: #e2c275;
+}
+
+[data-bs-theme="dark"] .prediction-alert.critical {
+    background: linear-gradient(135deg, #3c0b0e, #2a080a);
+    border-color: #842029;
+    color: #ea868f;
+}
+
+/* Animaciones de entrada */
+.fade-in {
+    animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Badges de estado */
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-optimal {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.badge-warning {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+    border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.badge-critical {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header de Predicciones -->
+<div class="predictions-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-crystal-ball me-3"></i>Predicciones IA
+                </h1>
+                <p class="lead mb-0">Análisis predictivo de rendimiento usando machine learning avanzado</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Resumen Predictivo -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon text-primary">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-value" id="avg-confidence">--%</div>
+            <div class="stat-label">Confianza Promedio</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon text-success">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-value" id="avg-days">--</div>
+            <div class="stat-label">Días Promedio Cosecha</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon text-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-value" id="total-risks">0</div>
+            <div class="stat-label">Factores de Riesgo</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon text-info">
+                <i class="fas fa-seedling"></i>
+            </div>
+            <div class="stat-value" id="total-predictions">--</div>
+            <div class="stat-label">Predicciones Totales</div>
+        </div>
+    </div>
+
+    <!-- Alertas de Predicción -->
+    <div id="alerts-container">
+        <div class="alert alert-info">
+            <i class="fas fa-robot me-2"></i>
+            <span id="alert-message">Cargando análisis predictivo...</span>
+        </div>
+    </div>
+
+    <!-- Predicciones por Planta -->
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="mb-0">
+                    <i class="fas fa-seedling me-2"></i>Predicciones por Tipo de Planta
+                </h3>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="detailed-view" onchange="toggleDetailedView()">
+                    <label class="form-check-label" for="detailed-view">Vista Detallada</label>
+                </div>
+            </div>
+            <div id="predictions-container" class="prediction-grid">
+                <!-- Estados de carga -->
+                <div class="prediction-card rabano">
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                    <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                </div>
+                <div class="prediction-card cilantro">
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                    <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Histórico -->
+    <div class="chart-container">
+        <div class="chart-controls">
+            <h4 class="mb-0">
+                <i class="fas fa-chart-line me-2"></i>Histórico de Predicciones
+            </h4>
+            <div class="d-flex gap-2">
+                <div class="btn-group timeframe-buttons">
+                    <button class="btn btn-outline-primary active" data-timeframe="7d">7 Días</button>
+                    <button class="btn btn-outline-primary" data-timeframe="30d">30 Días</button>
+                    <button class="btn btn-outline-primary" data-timeframe="90d">90 Días</button>
+                </div>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="history-chart"></canvas>
+            <div id="history-loading" class="loading-spinner">
+                <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                <p class="mb-0">Cargando histórico de predicciones...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Análisis Comparativo -->
+    <div class="row mt-4">
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <h4 class="mb-3">
+                    <i class="fas fa-balance-scale me-2"></i>Comparativa de Rendimiento
+                </h4>
+                <div class="chart-wrapper">
+                    <canvas id="comparison-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <h4 class="mb-3">
+                    <i class="fas fa-chart-pie me-2"></i>Distribución de Riesgos
+                </h4>
+                <div class="chart-wrapper">
+                    <canvas id="risk-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script>
+class PredictionsDashboard {
+    constructor() {
+        this.predictionsData = {};
+        this.historyData = [];
+        this.totalPredictionsCount = 0;
+        this.charts = {};
+        this.timeframe = '7d';
+        this.detailedView = false;
+        this.init();
+    }
+    
+    init() {
+        this.setupEventListeners();
+        this.initializeCharts();
+        this.loadData();
+        this.startAutoRefresh();
+    }
+    
+    setupEventListeners() {
+        // Timeframes de gráficos
+        document.querySelectorAll('[data-timeframe]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.setTimeframe(e.target.dataset.timeframe, e.target);
+            });
+        });
+        
+        // Visibilidad de página
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.stopAutoRefresh();
+            } else {
+                this.startAutoRefresh();
+            }
+        });
+    }
+    
+    async loadData() {
+        try {
+            this.showLoadingStates();
+            
+            // ✅ CONSULTAR DATOS REALES - usar predicciones_completas para las predicciones actuales
+            const predictionsResponse = await this.fetchWithTimeout('/api/predicciones_completas');
+            
+            if (!predictionsResponse.ok) {
+                throw new Error('Error cargando predicciones actuales');
+            }
+            
+            const predictionsData = await predictionsResponse.json();
+            
+            // ✅ USAR DATOS REALES de la base de datos
+            this.predictionsData = predictionsData.predicciones || {};
+            
+            // ✅ OBTENER EL NÚMERO REAL DE PREDICCIONES usando la API de predicciones sin límite
+            const countResponse = await this.fetchWithTimeout('/api/predictions?limit=1000');
+            if (countResponse.ok) {
+                const countData = await countResponse.json();
+                this.totalPredictionsCount = countData.predictions ? countData.predictions.length : 0;
+            } else {
+                // Si falla, calcular sumando las predicciones por planta
+                this.totalPredictionsCount = 0;
+                Object.values(this.predictionsData).forEach(prediccion => {
+                    this.totalPredictionsCount += prediccion.total_predicciones || 0;
+                });
+            }
+            
+            // ✅ CARGAR HISTORIAL para gráficos (máximo 50 puntos para no saturar)
+            const historyResponse = await this.fetchWithTimeout('/api/predictions?limit=50');
+            let historyData = [];
+            if (historyResponse.ok) {
+                const historyResponseData = await historyResponse.json();
+                historyData = historyResponseData.predictions || [];
+            }
+            
+            this.historyData = historyData;
+            
+            this.updatePredictionsDisplay();
+            this.updateMetrics();
+            this.updateAlerts();
+            this.updateCharts();
+            
+        } catch (error) {
+            console.error('Error:', error);
+            this.handleError(error);
+        } finally {
+            this.hideLoadingStates();
+        }
+    }
+    
+    async fetchWithTimeout(url, timeout = 10000) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
+        try {
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return response;
+        } catch (error) {
+            clearTimeout(timeoutId);
+            throw error;
+        }
+    }
+    
+    updatePredictionsDisplay() {
+        const container = document.getElementById('predictions-container');
+        
+        if (Object.keys(this.predictionsData).length === 0) {
+            container.innerHTML = this.createEmptyState('No hay predicciones disponibles en este momento');
+            return;
+        }
+        
+        let html = '';
+        Object.entries(this.predictionsData).forEach(([tipoPlanta, prediccion]) => {
+            html += this.createPredictionCard(tipoPlanta, prediccion);
+        });
+        
+        container.innerHTML = html;
+    }
+    
+    createPredictionCard(tipoPlanta, prediccion) {
+        const confidencePercent = (prediccion.probabilidad_exito * 100).toFixed(1);
+        const hasRisks = prediccion.factores_riesgo && prediccion.factores_riesgo.length > 0;
+        const status = this.calculatePredictionStatus(prediccion);
+        
+        return `
+            <div class="prediction-card ${tipoPlanta} fade-in">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h3 class="mb-0">${tipoPlanta.toUpperCase()}</h3>
+                            <span class="status-badge badge-${status}">${status.toUpperCase()}</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <i class="fas fa-calendar me-2"></i>
+                            <strong>${prediccion.dias_cosecha} días</strong> para cosecha
+                        </div>
+                        
+                        <div class="mb-3">
+                            <i class="fas fa-weight-hanging me-2"></i>
+                            Rendimiento estimado: <strong>${Math.round(prediccion.rendimiento_previsto)}g/m²</strong>
+                        </div>
+                        
+                        ${this.detailedView ? `
+                            <div class="mb-3">
+                                <small><i class="fas fa-chart-bar me-2"></i>Análisis realizados: ${prediccion.total_predicciones || 0}</small>
+                            </div>
+                        ` : ''}
+                        
+                        ${hasRisks ? `
+                            <div class="mt-3">
+                                <small><i class="fas fa-exclamation-triangle me-1"></i>Factores de riesgo detectados:</small>
+                                <div class="mt-2">
+                                    ${prediccion.factores_riesgo.map(risk => 
+                                        `<span class="risk-factor">${risk}</span>`
+                                    ).join('')}
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="mt-3">
+                                <span class="risk-factor" style="background: rgba(255,255,255,0.3);">
+                                    <i class="fas fa-check me-1"></i>Condiciones óptimas
+                                </span>
+                            </div>
+                        `}
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="mb-3">
+                            <div class="display-4 fw-bold">${confidencePercent}%</div>
+                            <small>Confianza del Modelo</small>
+                        </div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${confidencePercent}%"></div>
+                        </div>
+                        ${this.detailedView ? `
+                            <div class="mt-3">
+                                <small class="opacity-75">
+                                    <i class="fas fa-brain me-1"></i>
+                                    Modelo: Random Forest
+                                </small>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    calculatePredictionStatus(prediccion) {
+        const confidence = prediccion.probabilidad_exito * 100;
+        const riskCount = prediccion.factores_riesgo ? prediccion.factores_riesgo.length : 0;
+        
+        if (confidence >= 85 && riskCount === 0) return 'optimal';
+        if (confidence >= 70 && riskCount <= 2) return 'warning';
+        return 'critical';
+    }
+    
+    updateMetrics() {
+        const predictions = Object.values(this.predictionsData);
+        
+        if (predictions.length > 0) {
+            const avgConfidence = predictions.reduce((sum, p) => sum + p.probabilidad_exito, 0) / predictions.length * 100;
+            const avgDays = predictions.reduce((sum, p) => sum + p.dias_cosecha, 0) / predictions.length;
+            const totalRisks = predictions.reduce((sum, p) => sum + (p.factores_riesgo ? p.factores_riesgo.length : 0), 0);
+            
+            // ✅ USAR EL CONTEO REAL DE PREDICCIONES
+            document.getElementById('avg-confidence').textContent = avgConfidence.toFixed(1) + '%';
+            document.getElementById('avg-days').textContent = Math.round(avgDays);
+            document.getElementById('total-risks').textContent = totalRisks;
+            document.getElementById('total-predictions').textContent = this.totalPredictionsCount;
+        } else {
+            document.getElementById('avg-confidence').textContent = '--%';
+            document.getElementById('avg-days').textContent = '--';
+            document.getElementById('total-risks').textContent = '0';
+            document.getElementById('total-predictions').textContent = '0';
+        }
+    }
+    
+    updateAlerts() {
+        const container = document.getElementById('alerts-container');
+        const predictions = Object.values(this.predictionsData);
+        
+        if (predictions.length === 0) {
+            container.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-robot me-2"></i>
+                    No hay datos suficientes para generar predicciones. El sistema está recolectando datos.
+                </div>
+            `;
+            return;
+        }
+        
+        const criticalPredictions = predictions.filter(p => 
+            this.calculatePredictionStatus(p) === 'critical'
+        );
+        
+        if (criticalPredictions.length > 0) {
+            container.innerHTML = `
+                <div class="prediction-alert critical">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Alerta:</strong> ${criticalPredictions.length} predicción(es) requieren atención inmediata
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="prediction-alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>Estado óptimo:</strong> Todas las predicciones muestran condiciones favorables
+                </div>
+            `;
+        }
+    }
+    
+    initializeCharts() {
+        this.createHistoryChart();
+        this.createComparisonChart();
+        this.createRiskChart();
+    }
+    
+    createHistoryChart() {
+        const ctx = document.getElementById('history-chart').getContext('2d');
+        
+        // Ocultar spinner
+        document.getElementById('history-loading').style.display = 'none';
+        
+        this.charts.history = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [
+                    {
+                        label: 'Rábano - Rendimiento (g/m²)',
+                        data: [],
+                        borderColor: '#e91e63',
+                        backgroundColor: 'rgba(233, 30, 99, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Cilantro - Rendimiento (g/m²)',
+                        data: [],
+                        borderColor: '#9c27b0',
+                        backgroundColor: 'rgba(156, 39, 176, 0.1)',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        yAxisID: 'y'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            displayFormats: {
+                                day: 'MMM dd'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Fecha'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Rendimiento (g/m²)'
+                        },
+                        suggestedMin: 0
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                }
+            }
+        });
+    }
+    
+    createComparisonChart() {
+        const ctx = document.getElementById('comparison-chart').getContext('2d');
+        
+        this.charts.comparison = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Rábano', 'Cilantro'],
+                datasets: [
+                    {
+                        label: 'Rendimiento Actual (g/m²)',
+                        data: [0, 0],
+                        backgroundColor: ['#e91e63', '#9c27b0'],
+                        borderColor: ['#c2185b', '#7b1fa2'],
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Rendimiento Óptimo (g/m²)',
+                        data: [220, 150],
+                        backgroundColor: ['rgba(233, 30, 99, 0.3)', 'rgba(156, 39, 176, 0.3)'],
+                        borderColor: ['#e91e63', '#9c27b0'],
+                        borderWidth: 2,
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Rendimiento (g/m²)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    }
+    
+    createRiskChart() {
+        const ctx = document.getElementById('risk-chart').getContext('2d');
+        
+        this.charts.risk = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Sin Riesgos', 'Riesgos Leves', 'Riesgos Altos'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: ['#4caf50', '#ff9800', '#f44336'],
+                    borderWidth: 3,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.parsed}%`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    updateCharts() {
+        this.updateHistoryChart();
+        this.updateComparisonChart();
+        this.updateRiskChart();
+    }
+    
+    updateHistoryChart() {
+        if (!this.charts.history) return;
+        
+        // ✅ USAR DATOS REALES del historial de predicciones
+        const rabanoData = [];
+        const cilantroData = [];
+        
+        // Procesar datos históricos reales de la API
+        this.historyData.forEach(prediction => {
+            const date = new Date(prediction.date || prediction.prediction_date);
+            
+            if (prediction.plant_type === 'rabano') {
+                rabanoData.push({
+                    x: date,
+                    y: prediction.yield || prediction.predicted_yield
+                });
+            } else if (prediction.plant_type === 'cilantro') {
+                cilantroData.push({
+                    x: date,
+                    y: prediction.yield || prediction.predicted_yield
+                });
+            }
+        });
+        
+        // Si no hay datos reales, mostrar mensaje
+        if (rabanoData.length === 0 && cilantroData.length === 0) {
+            this.showNoDataMessage();
+            return;
+        }
+        
+        this.charts.history.data.datasets[0].data = rabanoData;
+        this.charts.history.data.datasets[1].data = cilantroData;
+        this.charts.history.update('none');
+    }
+    
+    updateComparisonChart() {
+        if (!this.charts.comparison || Object.keys(this.predictionsData).length === 0) return;
+        
+        const rabanoYield = this.predictionsData.rabano ? Math.round(this.predictionsData.rabano.rendimiento_previsto) : 0;
+        const cilantroYield = this.predictionsData.cilantro ? Math.round(this.predictionsData.cilantro.rendimiento_previsto) : 0;
+        
+        this.charts.comparison.data.datasets[0].data = [rabanoYield, cilantroYield];
+        this.charts.comparison.update('none');
+    }
+    
+    updateRiskChart() {
+        if (!this.charts.risk || Object.keys(this.predictionsData).length === 0) return;
+        
+        const predictions = Object.values(this.predictionsData);
+        const totalRisks = predictions.reduce((sum, p) => sum + (p.factores_riesgo ? p.factores_riesgo.length : 0), 0);
+        const maxPossibleRisks = predictions.length * 3;
+        
+        const noRisk = Math.max(0, 100 - (totalRisks / maxPossibleRisks) * 100);
+        const lowRisk = (totalRisks / maxPossibleRisks) * 50;
+        const highRisk = (totalRisks / maxPossibleRisks) * 50;
+        
+        this.charts.risk.data.datasets[0].data = [noRisk, lowRisk, highRisk];
+        this.charts.risk.update('none');
+    }
+    
+    showNoDataMessage() {
+        const chartElement = document.getElementById('history-chart');
+        const parent = chartElement.parentElement;
+        
+        parent.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-database fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No hay datos históricos disponibles</h4>
+                <p class="text-muted">Los datos de predicciones se generarán automáticamente cada 5 minutos</p>
+            </div>
+        `;
+    }
+    
+    setTimeframe(timeframe, button) {
+        this.timeframe = timeframe;
+        
+        // Actualizar botones activos
+        button.closest('.btn-group').querySelectorAll('.btn').forEach(btn => {
+            btn.classList.toggle('active', btn === button);
+        });
+        
+        this.updateHistoryChart();
+    }
+    
+    startAutoRefresh() {
+        if (!this.refreshInterval) {
+            this.refreshInterval = setInterval(() => this.loadData(), 30000); // 30 segundos
+        }
+    }
+    
+    stopAutoRefresh() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+            this.refreshInterval = null;
+        }
+    }
+    
+    toggleDetailedView() {
+        this.detailedView = !this.detailedView;
+        this.updatePredictionsDisplay();
+    }
+    
+    showLoadingStates() {
+        document.querySelectorAll('.stat-value').forEach(el => {
+            el.classList.add('skeleton');
+        });
+    }
+    
+    hideLoadingStates() {
+        document.querySelectorAll('.stat-value').forEach(el => {
+            el.classList.remove('skeleton');
+        });
+    }
+    
+    handleError(error) {
+        const container = document.getElementById('predictions-container');
+        container.innerHTML = this.createEmptyState('Error cargando predicciones: ' + error.message);
+    }
+    
+    createEmptyState(message) {
+        return `
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-robot fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">${message}</h4>
+            </div>
+        `;
+    }
+}
+
+// Funciones globales
+function toggleDetailedView() {
+    if (window.predictionsDashboard) {
+        window.predictionsDashboard.toggleDetailedView();
+    }
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    window.predictionsDashboard = new PredictionsDashboard();
+});
+</script>
+{% endblock %}

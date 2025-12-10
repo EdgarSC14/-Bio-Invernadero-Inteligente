@@ -1,0 +1,11 @@
+# Dependencias esenciales del proyecto Invernadero Inteligente
+flask
+psycopg2-binary
+requests
+pyserial
+
+# Dependencias para Business Intelligence
+pandas
+numpy
+scikit-learn
+joblib

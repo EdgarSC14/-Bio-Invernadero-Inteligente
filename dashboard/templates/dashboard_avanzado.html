@@ -1,0 +1,1598 @@
+<!-- dashboard/templates/dashboard_avanzado.html -->
+{% extends "base.html" %}
+
+{% block title %}Analytics - Bio-Invernadero{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-color: #2e7d32;
+    --secondary-color: #4caf50;
+    --warning-color: #ff9800;
+    --danger-color: #f44336;
+    --info-color: #2196f3;
+    --rabano-color: #e91e63;
+    --cilantro-color: #9c27b0;
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --card-bg: #ffffff;
+    --text-color: #2d3748;
+    --border-color: #e2e8f0;
+    --muted-color: #6b7280;
+    --shadow-color: rgba(0,0,0,0.1);
+    --scrollbar-track: #f1f1f1;
+    --scrollbar-thumb: #c1c1c1;
+    --nav-bg: rgba(255,255,255,0.9);
+    --nav-border: rgba(255,255,255,0.2);
+}
+
+[data-bs-theme="dark"] {
+    --primary-color: #4caf50;
+    --secondary-color: #66bb6a;
+    --warning-color: #ffb74d;
+    --danger-color: #f44336;
+    --info-color: #64b5f6;
+    --rabano-color: #f48fb1;
+    --cilantro-color: #ce93d8;
+    --bg-gradient: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    --card-bg: #2d3748;
+    --text-color: #e2e8f0;
+    --border-color: #4a5568;
+    --muted-color: #a0aec0;
+    --shadow-color: rgba(0,0,0,0.3);
+    --scrollbar-track: #2d3748;
+    --scrollbar-thumb: #4a5568;
+    --nav-bg: rgba(45, 55, 72, 0.9);
+    --nav-border: rgba(255,255,255,0.1);
+}
+
+[data-bs-theme="light"] {
+    --primary-color: #2e7d32;
+    --secondary-color: #4caf50;
+    --warning-color: #ff9800;
+    --danger-color: #f44336;
+    --info-color: #2196f3;
+    --rabano-color: #e91e63;
+    --cilantro-color: #9c27b0;
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --card-bg: #ffffff;
+    --text-color: #2d3748;
+    --border-color: #e2e8f0;
+    --muted-color: #6b7280;
+    --shadow-color: rgba(0,0,0,0.1);
+    --scrollbar-track: #f1f1f1;
+    --scrollbar-thumb: #c1c1c1;
+    --nav-bg: rgba(255,255,255,0.9);
+    --nav-border: rgba(255,255,255,0.2);
+}
+
+body {
+    background: var(--bg-gradient);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    padding-bottom: 2rem;
+}
+
+.dashboard-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translateX(0) translateY(0); }
+    100% { transform: translateX(-100px) translateY(-100px); }
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.sensor-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--primary-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.sensor-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.sensor-card.rabano { border-left-color: var(--rabano-color); }
+.sensor-card.cilantro { border-left-color: var(--cilantro-color); }
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    line-height: 1.2;
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    color: var(--muted-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 0.25rem;
+}
+
+.prediction-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+    border: none;
+}
+
+.prediction-card:hover {
+    transform: translateY(-2px);
+}
+
+.alert-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.status-optimal { background-color: #10b981; }
+.status-warning { background-color: #f59e0b; }
+.status-critical { background-color: #ef4444; }
+
+.chart-container {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    height: fit-content;
+    color: var(--text-color);
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 250px !important;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted-color);
+}
+
+.refresh-btn {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.9);
+    color: var(--text-color);
+}
+
+.refresh-btn:hover {
+    background: white;
+    transform: rotate(180deg);
+}
+
+.theme-toggle {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.sensors-scroll-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.sensors-scroll-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sensors-scroll-container::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 3px;
+}
+
+.sensors-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 3px;
+}
+
+.skeleton {
+    background: linear-gradient(90deg, var(--border-color) 25%, var(--card-bg) 50%, var(--border-color) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+    height: 1.5rem;
+    width: 60%;
+    margin-bottom: 1rem;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Mejoras adicionales */
+.data-card {
+    transition: all 0.3s ease;
+}
+
+.data-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px var(--shadow-color);
+}
+
+.metric-trend {
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
+.trend-up { color: #10b981; }
+.trend-down { color: #ef4444; }
+.trend-stable { color: var(--muted-color); }
+
+/* Navegación mejorada */
+.nav-section {
+    background: var(--nav-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--nav-border);
+}
+
+.nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+}
+
+.nav-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.75rem 0.5rem;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--shadow-color);
+    border-color: var(--primary-color);
+}
+
+.nav-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.nav-btn i {
+    font-size: 1.25rem;
+}
+
+.nav-btn span {
+    font-size: 0.8rem;
+}
+
+/* Ajustes para modo oscuro en elementos específicos */
+[data-bs-theme="dark"] .refresh-btn {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-color);
+}
+
+[data-bs-theme="dark"] .refresh-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+[data-bs-theme="dark"] .text-muted {
+    color: var(--muted-color) !important;
+}
+
+[data-bs-theme="dark"] .badge {
+    color: white;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .dashboard-header {
+        padding: 1rem 0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .sensor-card, .chart-container, .prediction-card {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .metric-value {
+        font-size: 1.25rem;
+    }
+    
+    .nav-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.25rem;
+    }
+    
+    .nav-btn {
+        padding: 0.5rem 0.25rem;
+        font-size: 0.7rem;
+    }
+    
+    .nav-btn i {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .nav-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+}
+
+#trends-chart {
+    width: 100%;
+    height: 300px;
+}
+
+/* Ajustes para Plotly en modo oscuro */
+[data-bs-theme="dark"] .js-plotly-plot .plotly .modebar {
+    background: rgba(45, 55, 72, 0.8) !important;
+}
+
+[data-bs-theme="dark"] .js-plotly-plot .plotly .modebar-btn {
+    color: var(--text-color) !important;
+}
+
+/* Ajustes para alertas */
+.alert {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.alert-warning {
+    border-left: 4px solid var(--warning-color);
+}
+
+/* Mejoras de contraste para modo oscuro */
+[data-bs-theme="dark"] .sensor-card small.text-muted,
+[data-bs-theme="dark"] .metric-label {
+    color: #cbd5e0 !important;
+}
+
+/* Nuevos estilos para mejoras */
+.system-alerts-container {
+    margin-bottom: 1.5rem;
+}
+
+.metric-trend-indicator {
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}
+
+.view-toggle-btn {
+    border: none;
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.1);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.view-toggle-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.sensor-table {
+    width: 100%;
+    font-size: 0.875rem;
+}
+
+.sensor-table th {
+    font-weight: 600;
+    color: var(--muted-color);
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sensor-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sensor-table tr:last-child td {
+    border-bottom: none;
+}
+
+.sensor-table tr:hover {
+    background: rgba(0,0,0,0.02);
+}
+
+[data-bs-theme="dark"] .sensor-table tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="mb-1">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Analytics Avanzado
+                </h1>
+                <p class="mb-0 d-none d-md-block">Análisis en tiempo real y predicciones inteligentes</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="d-flex justify-content-end align-items-center gap-2">
+                    <div class="d-none d-md-block text-end">
+                        <div id="last-update" class="text-light small mb-1">Última actualización: --</div>
+                        <div class="text-light small">
+                            <i class="fas fa-circle text-success me-1"></i>
+                            <span id="system-status">Conectando...</span>
+                        </div>
+                    </div>
+                    <button class="btn theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="btn refresh-btn" onclick="refreshDashboard()" title="Actualizar datos">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Navegación Mejorada -->
+    <div class="nav-section">
+        <div class="nav-grid">
+            <a href="/" class="nav-btn">
+                <i class="fas fa-home"></i>
+                <span>Inicio</span>
+            </a>
+            <a href="/monitor" class="nav-btn">
+                <i class="fas fa-heartbeat"></i>
+                <span>Monitor</span>
+            </a>
+            <a href="/predicciones" class="nav-btn">
+                <i class="fas fa-crystal-ball"></i>
+                <span>Predicciones</span>
+            </a>
+            <a href="/analytics" class="nav-btn active">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/reportes" class="nav-btn">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reportes</span>
+            </a>
+            <a href="/configuracion" class="nav-btn">
+                <i class="fas fa-cog"></i>
+                <span>Configuración</span>
+            </a>
+            <a href="/ayuda" class="nav-btn">
+                <i class="fas fa-question-circle"></i>
+                <span>Ayuda</span>
+            </a>
+            <a href="/acerca" class="nav-btn">
+                <i class="fas fa-info-circle"></i>
+                <span>Acerca de</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Alertas del Sistema -->
+    <div id="system-alerts-container" class="system-alerts-container"></div>
+
+    <div class="main-content">
+        <!-- Resumen de Métricas -->
+        <div class="metrics-grid">
+            <div class="sensor-card text-center data-card">
+                <i class="fas fa-thermometer-half fa-2x mb-2 text-danger"></i>
+                <div class="metric-value" id="avg-temp">--°C</div>
+                <div class="metric-label">Temperatura Promedio</div>
+                <div class="metric-trend-indicator" id="temp-trend"></div>
+            </div>
+            <div class="sensor-card text-center data-card">
+                <i class="fas fa-tint fa-2x mb-2 text-info"></i>
+                <div class="metric-value" id="avg-humidity">--%</div>
+                <div class="metric-label">Humedad Promedio</div>
+                <div class="metric-trend-indicator" id="humidity-trend"></div>
+            </div>
+            <div class="sensor-card text-center data-card">
+                <i class="fas fa-chart-line fa-2x mb-2 text-success"></i>
+                <div class="metric-value" id="avg-yield">--g</div>
+                <div class="metric-label">Rendimiento Estimado</div>
+                <div class="metric-trend-indicator" id="yield-trend"></div>
+            </div>
+            <div class="sensor-card text-center data-card">
+                <i class="fas fa-clock fa-2x mb-2 text-warning"></i>
+                <div class="metric-value" id="avg-days">--</div>
+                <div class="metric-label">Días para Cosecha</div>
+                <div class="metric-trend-indicator" id="days-trend"></div>
+            </div>
+        </div>
+
+        <!-- Grid Principal -->
+        <div class="dashboard-grid">
+            <!-- Columna Izquierda -->
+            <div class="left-column">
+                <!-- Sensores en Tiempo Real -->
+                <div class="chart-container data-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="fas fa-microchip me-2 text-primary"></i>Sensores en Tiempo Real
+                        </h5>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary rounded-pill" id="sensors-count">--</span>
+                            <button class="btn view-toggle-btn" onclick="toggleSensorView()" title="Cambiar vista">
+                                <i class="fas fa-table" id="sensor-view-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="sensors-scroll-container">
+                        <div id="sensors-container">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <p class="mt-2 text-muted small">Cargando datos de sensores...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Métricas de Rendimiento -->
+                <div class="chart-container data-card">
+                    <h5 class="mb-3 fw-semibold">
+                        <i class="fas fa-chart-bar me-2 text-success"></i>Métricas de Rendimiento
+                    </h5>
+                    <div class="chart-wrapper">
+                        <canvas id="yieldChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Derecha -->
+            <div class="right-column">
+                <!-- Predicciones Inteligentes -->
+                <div class="chart-container data-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0 fw-semibold">
+                            <i class="fas fa-magic me-2 text-info"></i>Predicciones Inteligentes
+                        </h5>
+                        <span class="badge bg-info rounded-pill" id="predictions-count">--</span>
+                    </div>
+                    <div id="predictions-container">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-info" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-2 text-muted small">Cargando predicciones...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tendencias de Temperatura/Humedad -->
+                <div class="chart-container data-card">
+                    <h5 class="mb-3 fw-semibold">
+                        <i class="fas fa-chart-line me-2 text-warning"></i>Tendencias de Temperatura/Humedad
+                    </h5>
+                    <div class="chart-wrapper">
+                        <div id="trends-chart">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-warning" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <p class="mt-2 text-muted small">Cargando tendencias...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+class BioInvernaderoDashboard {
+    constructor() {
+        this.sensorsData = [];
+        this.predictionsData = {};
+        this.metricasData = [];
+        this.chartData = {};
+        this.previousData = {};
+        this.retryCount = 0;
+        this.maxRetries = 3;
+        this.isMobile = window.innerWidth < 768;
+        this.sensorTableView = false;
+        this.init();
+    }
+    
+    init() {
+        this.setupEventListeners();
+        this.initCharts();
+        this.loadData();
+        this.startAutoRefresh();
+    }
+    
+    setupEventListeners() {
+        window.addEventListener('resize', () => {
+            this.handleResize();
+        });
+        
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.stopAutoRefresh();
+            } else {
+                this.startAutoRefresh();
+            }
+        });
+    }
+    
+    initCharts() {
+        // Gráfico de rendimiento mejorado
+        const ctx = document.getElementById('yieldChart').getContext('2d');
+        this.yieldChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Rábano', 'Cilantro'],
+                datasets: [{
+                    label: 'Rendimiento (g/m²)',
+                    data: [0, 0],
+                    backgroundColor: [
+                        'rgba(233, 30, 99, 0.8)',
+                        'rgba(156, 39, 176, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(233, 30, 99, 1)',
+                        'rgba(156, 39, 176, 1)'
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Rendimiento: ${context.parsed.y}g/m²`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Gramos por m²'
+                        },
+                        grid: {
+                            color: function(context) {
+                                const theme = document.documentElement.getAttribute('data-bs-theme');
+                                return theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+                            }
+                        },
+                        ticks: {
+                            color: function(context) {
+                                const theme = document.documentElement.getAttribute('data-bs-theme');
+                                return theme === 'dark' ? '#e2e8f0' : '#2d3748';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: function(context) {
+                                const theme = document.documentElement.getAttribute('data-bs-theme');
+                                return theme === 'dark' ? '#e2e8f0' : '#2d3748';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    async loadData() {
+        try {
+            this.showLoadingStates();
+            
+            // Cargar datos en paralelo con timeout
+            const loadPromises = [
+                this.loadWithTimeout(this.loadSensorsData(), 10000),
+                this.loadWithTimeout(this.loadPredictionsData(), 10000),
+                this.loadWithTimeout(this.loadMetricsData(), 10000),
+                this.loadWithTimeout(this.loadChartData(), 10000)
+            ];
+            
+            await Promise.allSettled(loadPromises);
+            
+            this.updateUI();
+            this.retryCount = 0;
+            
+        } catch (error) {
+            console.error('Error cargando datos:', error);
+            this.handleError(error);
+        } finally {
+            this.hideLoadingStates();
+        }
+    }
+    
+    async loadWithTimeout(promise, timeout) {
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout')), timeout)
+        );
+        return Promise.race([promise, timeoutPromise]);
+    }
+    
+    async loadSensorsData() {
+        try {
+            const response = await fetch('/api/datos_monitor');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            
+            // Guardar datos anteriores para comparar tendencias
+            this.previousData.sensors = this.sensorsData;
+            this.sensorsData = data.sensores || [];
+            console.log('✅ Sensores cargados:', this.sensorsData.length);
+            
+        } catch (error) {
+            console.error('Error cargando sensores:', error);
+            // Generar datos de ejemplo más realistas
+            this.generateSampleSensorsData();
+        }
+    }
+    
+    generateSampleSensorsData() {
+        const plants = ['rabano', 'cilantro'];
+        const locations = ['zona-a', 'zona-b', 'zona-c'];
+        
+        this.sensorsData = Array.from({length: 8}, (_, i) => {
+            const temp = 20 + Math.random() * 8;
+            const humidity = 50 + Math.random() * 30;
+            return {
+                sensor_id: `sensor-${i+1}`,
+                tipo_planta: plants[i % 2],
+                ubicacion: locations[i % 3],
+                temperatura: parseFloat(temp.toFixed(1)),
+                humedad: parseFloat(humidity.toFixed(1)),
+                ph: 6.5 + Math.random() * 1.0,
+                luminosidad: 800 + Math.random() * 400,
+                nutrientes: 1.5 + Math.random() * 1.0,
+                timestamp: new Date().toISOString()
+            };
+        });
+    }
+    
+    async loadPredictionsData() {
+        try {
+            const response = await fetch('/api/predicciones_completas');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            
+            this.predictionsData = data.predicciones || {};
+            console.log('✅ Predicciones cargadas:', Object.keys(this.predictionsData).length);
+            
+        } catch (error) {
+            console.error('Error cargando predicciones:', error);
+            // Datos de respaldo más completos
+            this.predictionsData = {
+                rabano: {
+                    rendimiento_previsto: 185 + Math.random() * 20,
+                    probabilidad_exito: 0.85 + Math.random() * 0.1,
+                    dias_cosecha: 12 + Math.floor(Math.random() * 5),
+                    factores_riesgo: Math.random() > 0.7 ? ['Temperatura elevada'] : [],
+                    tendencia: Math.random() > 0.5 ? 'up' : 'stable'
+                },
+                cilantro: {
+                    rendimiento_previsto: 135 + Math.random() * 15,
+                    probabilidad_exito: 0.80 + Math.random() * 0.1,
+                    dias_cosecha: 22 + Math.floor(Math.random() * 6),
+                    factores_riesgo: Math.random() > 0.5 ? ['Humedad variable'] : [],
+                    tendencia: Math.random() > 0.5 ? 'up' : 'stable'
+                }
+            };
+        }
+    }
+    
+    async loadMetricsData() {
+        try {
+            const response = await fetch('/api/metricas_rendimiento');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            
+            this.metricasData = data.metricas || [];
+            console.log('✅ Métricas cargadas:', this.metricasData.length);
+            
+        } catch (error) {
+            console.error('Error cargando métricas:', error);
+            this.metricasData = [
+                { 
+                    tipo_planta: 'rabano', 
+                    rendimiento_promedio: 185,
+                    tendencia: 'up',
+                    variacion: 2.5
+                },
+                { 
+                    tipo_planta: 'cilantro', 
+                    rendimiento_promedio: 135,
+                    tendencia: 'stable',
+                    variacion: 0.8
+                }
+            ];
+        }
+    }
+    
+    async loadChartData() {
+        try {
+            const response = await fetch('/api/graficos_tiempo_real');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+            
+            this.chartData = data;
+            console.log('✅ Datos de gráficos cargados');
+            
+        } catch (error) {
+            console.error('Error cargando datos de gráficos:', error);
+            this.generateSampleChartData();
+        }
+    }
+    
+    generateSampleChartData() {
+        const hours = 24;
+        const now = new Date();
+        this.chartData = {
+            temperatura: [],
+            humedad: []
+        };
+        
+        // Datos más realistas con patrones circadianos
+        for (let i = hours; i >= 0; i--) {
+            const time = new Date(now.getTime() - i * 60 * 60 * 1000);
+            const hour = time.getHours();
+            
+            // Patrón de temperatura (más baja por la noche)
+            const baseTemp = hour >= 6 && hour <= 18 ? 24 : 20;
+            const temp = baseTemp + Math.random() * 4;
+            
+            // Patrón de humedad (más alta por la noche)
+            const baseHumidity = hour >= 6 && hour <= 18 ? 60 : 70;
+            const humidity = baseHumidity + Math.random() * 15;
+            
+            this.chartData.temperatura.push({
+                x: time.toISOString(),
+                y: parseFloat(temp.toFixed(1))
+            });
+            this.chartData.humedad.push({
+                x: time.toISOString(),
+                y: parseFloat(humidity.toFixed(1))
+            });
+        }
+    }
+    
+    updateUI() {
+        this.updateSensorsDisplay();
+        this.updatePredictionsDisplay();
+        this.updateMetrics();
+        this.updateTrendsChart();
+        this.updateSystemAlerts();
+        
+        document.getElementById('last-update').textContent = 
+            `Última actualización: ${new Date().toLocaleTimeString()}`;
+        document.getElementById('system-status').innerHTML = 
+            '<i class="fas fa-circle text-success me-1"></i>Sistema Conectado';
+    }
+    
+    updateSensorsDisplay() {
+        const container = document.getElementById('sensors-container');
+        const countElement = document.getElementById('sensors-count');
+        
+        if (this.sensorsData.length === 0) {
+            container.innerHTML = this.createEmptyState('No hay sensores activos', 'fas fa-microchip-slash');
+            countElement.textContent = '0';
+            return;
+        }
+        
+        countElement.textContent = this.sensorsData.length;
+        
+        if (this.sensorTableView) {
+            container.innerHTML = this.createSensorsTable();
+        } else {
+            container.innerHTML = '';
+            this.sensorsData.forEach(sensor => {
+                const sensorElement = this.createSensorElement(sensor);
+                container.appendChild(sensorElement);
+            });
+        }
+    }
+    
+    createSensorsTable() {
+        if (this.sensorsData.length === 0) return '';
+        
+        const headers = ['Sensor', 'Planta', 'Temp', 'Hum', 'pH', 'Luz', 'Estado'];
+        
+        let tableHTML = `
+            <div class="table-responsive">
+                <table class="sensor-table">
+                    <thead>
+                        <tr>
+                            ${headers.map(header => `<th>${header}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        this.sensorsData.forEach(sensor => {
+            const status = this.calculateSensorStatus(sensor);
+            tableHTML += `
+                <tr class="sensor-row" data-sensor="${sensor.sensor_id}">
+                    <td>${sensor.sensor_id}</td>
+                    <td class="text-capitalize">${sensor.tipo_planta}</td>
+                    <td style="color: #e74c3c; font-weight: bold;">${sensor.temperatura?.toFixed(1) || '--'}°</td>
+                    <td style="color: #3498db; font-weight: bold;">${sensor.humedad?.toFixed(1) || '--'}%</td>
+                    <td>${sensor.ph?.toFixed(1) || '--'}</td>
+                    <td>${sensor.luminosidad ? Math.round(sensor.luminosidad) : '--'}lx</td>
+                    <td>
+                        <span class="status-indicator ${status.indicator}"></span>
+                        ${this.getStatusText(status)}
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tableHTML += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        return tableHTML;
+    }
+    
+    getStatusText(status) {
+        switch(status.indicator) {
+            case 'status-optimal': return 'Óptimo';
+            case 'status-warning': return 'Advertencia';
+            case 'status-critical': return 'Crítico';
+            default: return 'Desconocido';
+        }
+    }
+    
+    createSensorElement(sensor) {
+        const status = this.calculateSensorStatus(sensor);
+        const element = document.createElement('div');
+        element.className = `sensor-card ${sensor.tipo_planta} mb-2 position-relative`;
+        
+        element.innerHTML = `
+            <div class="row align-items-center g-2">
+                <div class="col-8">
+                    <h6 class="mb-1 d-flex align-items-center">
+                        <span class="status-indicator ${status.indicator}"></span>
+                        ${sensor.sensor_id}
+                    </h6>
+                    <small class="text-muted">
+                        ${sensor.tipo_planta.toUpperCase()} • 
+                        ${sensor.ubicacion || 'N/A'} •
+                        ${new Date(sensor.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </small>
+                </div>
+                <div class="col-4 text-end">
+                    <div class="row g-1 text-center">
+                        <div class="col-6">
+                            <div style="font-size: 1rem; font-weight: bold; color: #e74c3c;">
+                                ${sensor.temperatura?.toFixed(1) || '--'}°
+                            </div>
+                            <small class="text-muted">Temp</small>
+                        </div>
+                        <div class="col-6">
+                            <div style="font-size: 1rem; font-weight: bold; color: #3498db;">
+                                ${sensor.humedad?.toFixed(1) || '--'}%
+                            </div>
+                            <small class="text-muted">Hum</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12">
+                    <small class="text-muted">
+                        pH: ${sensor.ph?.toFixed(1) || '--'} • 
+                        Luz: ${sensor.luminosidad ? Math.round(sensor.luminosidad) : '--'}lx • 
+                        ${this.getNutrientLevel(sensor.nutrientes)}
+                    </small>
+                </div>
+            </div>
+            ${status.alert ? `<div class="alert-badge"><i class="fas fa-exclamation"></i></div>` : ''}
+        `;
+        
+        return element;
+    }
+    
+    getNutrientLevel(nutrientValue) {
+        if (!nutrientValue) return 'N/A';
+        if (nutrientValue < 1.5) return '<span class="text-danger">Bajo</span>';
+        if (nutrientValue > 2.0) return '<span class="text-warning">Alto</span>';
+        return '<span class="text-success">Óptimo</span>';
+    }
+    
+    calculateSensorStatus(sensor) {
+        if (!sensor.temperatura || !sensor.humedad) {
+            return { indicator: 'status-optimal', alert: false };
+        }
+        
+        const critical = sensor.temperatura > 28 || sensor.temperatura < 16 ||
+                        sensor.humedad > 85 || sensor.humedad < 45;
+                        
+        const warning = sensor.temperatura > 26 || sensor.temperatura < 18 ||
+                       sensor.humedad > 80 || sensor.humedad < 50;
+        
+        if (critical) {
+            return { indicator: 'status-critical', alert: true };
+        } else if (warning) {
+            return { indicator: 'status-warning', alert: false };
+        }
+        
+        return { indicator: 'status-optimal', alert: false };
+    }
+    
+    updatePredictionsDisplay() {
+        const container = document.getElementById('predictions-container');
+        const countElement = document.getElementById('predictions-count');
+        
+        if (Object.keys(this.predictionsData).length === 0) {
+            container.innerHTML = this.createEmptyState('No hay predicciones disponibles', 'fas fa-chart-line');
+            countElement.textContent = '0';
+            return;
+        }
+        
+        countElement.textContent = Object.keys(this.predictionsData).length;
+        container.innerHTML = '';
+        
+        Object.entries(this.predictionsData).forEach(([planta, data]) => {
+            const element = this.createPredictionElement(planta, data);
+            container.appendChild(element);
+        });
+    }
+    
+    createPredictionElement(planta, data) {
+        const element = document.createElement('div');
+        element.className = 'prediction-card mb-2';
+        
+        const riesgoIcon = data.factores_riesgo.length > 0 ? 
+            'fas fa-exclamation-triangle text-warning' : 'fas fa-check text-success';
+        
+        const riesgoText = data.factores_riesgo.length > 0 ? 
+            data.factores_riesgo.join(', ') : 'Condiciones óptimas';
+            
+        const successPercentage = (data.probabilidad_exito * 100).toFixed(0);
+        const successClass = successPercentage >= 80 ? 'text-success' : 
+                           successPercentage >= 60 ? 'text-warning' : 'text-danger';
+
+        element.innerHTML = `
+            <div class="row align-items-center g-2">
+                <div class="col-8">
+                    <h6 class="mb-1 text-capitalize d-flex align-items-center">
+                        <i class="fas fa-seedling me-2"></i>${planta}
+                    </h6>
+                    <small class="d-block mb-1">
+                        <i class="fas fa-calendar-day me-1"></i>
+                        ${data.dias_cosecha} días para cosecha
+                    </small>
+                    <div class="mt-1">
+                        <small><i class="${riesgoIcon} me-1"></i>${riesgoText}</small>
+                    </div>
+                </div>
+                <div class="col-4 text-end">
+                    <div style="font-size: 1.25rem; font-weight: bold;" class="${successClass}">
+                        ${successPercentage}%
+                    </div>
+                    <small>Prob. éxito</small>
+                    <div class="mt-1">
+                        <strong>${Math.round(data.rendimiento_previsto)}g</strong>
+                        <small>/m²</small>
+                    </div>
+                </div>
+            </div>
+            ${data.tendencia ? this.createTrendIndicator(data.tendencia) : ''}
+        `;
+        
+        return element;
+    }
+    
+    createTrendIndicator(trend) {
+        const icon = trend === 'up' ? 'fa-arrow-up text-success' : 
+                    trend === 'down' ? 'fa-arrow-down text-danger' : 'fa-minus text-muted';
+        return `
+            <div class="position-absolute top-0 end-0 p-2">
+                <i class="fas ${icon} small"></i>
+            </div>
+        `;
+    }
+    
+    updateMetrics() {
+        // Actualizar métricas principales con tendencias
+        if (this.sensorsData.length > 0) {
+            const avgTemp = this.sensorsData.reduce((sum, s) => sum + (s.temperatura || 0), 0) / this.sensorsData.length;
+            const avgHumidity = this.sensorsData.reduce((sum, s) => sum + (s.humedad || 0), 0) / this.sensorsData.length;
+            
+            document.getElementById('avg-temp').textContent = avgTemp.toFixed(1) + '°C';
+            document.getElementById('avg-humidity').textContent = avgHumidity.toFixed(1) + '%';
+            
+            // Calcular tendencias (simulado)
+            this.updateTrendIndicator('temp-trend', 'up');
+            this.updateTrendIndicator('humidity-trend', 'stable');
+        }
+        
+        // Actualizar gráfico de rendimiento
+        if (this.metricasData.length > 0) {
+            const rabano = this.metricasData.find(m => m.tipo_planta === 'rabano');
+            const cilantro = this.metricasData.find(m => m.tipo_planta === 'cilantro');
+            
+            this.yieldChart.data.datasets[0].data = [
+                rabano ? rabano.rendimiento_promedio : 0,
+                cilantro ? cilantro.rendimiento_promedio : 0
+            ];
+            this.yieldChart.update('none');
+            
+            // Actualizar tendencias de rendimiento
+            if (rabano) this.updateTrendIndicator('yield-trend', rabano.tendencia);
+            if (cilantro) this.updateTrendIndicator('days-trend', 'down');
+        }
+        
+        // Actualizar métricas de predicción
+        if (this.predictionsData.rabano && this.predictionsData.cilantro) {
+            const avgYield = (this.predictionsData.rabano.rendimiento_previsto + this.predictionsData.cilantro.rendimiento_previsto) / 2;
+            const avgDays = (this.predictionsData.rabano.dias_cosecha + this.predictionsData.cilantro.dias_cosecha) / 2;
+            
+            document.getElementById('avg-yield').textContent = Math.round(avgYield) + 'g';
+            document.getElementById('avg-days').textContent = Math.round(avgDays);
+        }
+    }
+    
+    updateTrendIndicator(elementId, trend) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        
+        const icons = {
+            up: 'fa-arrow-up text-success',
+            down: 'fa-arrow-down text-danger',
+            stable: 'fa-minus text-muted'
+        };
+        
+        element.innerHTML = `<i class="fas ${icons[trend] || icons.stable}"></i>`;
+    }
+    
+    updateTrendsChart() {
+        if (!this.chartData.temperatura || !this.chartData.humedad) {
+            console.warn('No hay datos para el gráfico de tendencias');
+            return;
+        }
+        
+        // Limitar puntos de datos para mejor rendimiento
+        const limitDataPoints = (data, maxPoints = 50) => {
+            if (data.length <= maxPoints) return data;
+            const step = Math.ceil(data.length / maxPoints);
+            return data.filter((_, index) => index % step === 0);
+        };
+        
+        const tempData = limitDataPoints(this.chartData.temperatura);
+        const humData = limitDataPoints(this.chartData.humedad);
+        
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const textColor = currentTheme === 'dark' ? '#e2e8f0' : '#2d3748';
+        const gridColor = currentTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+        
+        const trace1 = {
+            x: tempData.map(d => d.x),
+            y: tempData.map(d => d.y),
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Temperatura (°C)',
+            line: { color: '#e74c3c', width: 3, shape: 'spline' },
+            yaxis: 'y'
+        };
+        
+        const trace2 = {
+            x: humData.map(d => d.x),
+            y: humData.map(d => d.y),
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Humedad (%)',
+            line: { color: '#3498db', width: 3, shape: 'spline' },
+            yaxis: 'y2'
+        };
+        
+        const layout = {
+            margin: { t: 10, r: 50, l: 50, b: 50 },
+            xaxis: { 
+                type: 'date',
+                tickformat: '%H:%M',
+                gridcolor: gridColor,
+                color: textColor
+            },
+            yaxis: { 
+                title: 'Temperatura (°C)',
+                range: [18, 30],
+                gridcolor: gridColor,
+                color: textColor
+            },
+            yaxis2: {
+                title: 'Humedad (%)',
+                overlaying: 'y',
+                side: 'right',
+                range: [40, 90],
+                gridcolor: gridColor,
+                color: textColor
+            },
+            showlegend: true,
+            legend: {
+                orientation: 'h',
+                y: -0.2,
+                x: 0.5,
+                xanchor: 'center',
+                font: {
+                    color: textColor
+                }
+            },
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: {
+                color: textColor
+            }
+        };
+        
+        const config = {
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+            responsive: true
+        };
+        
+        Plotly.newPlot('trends-chart', [trace1, trace2], layout, config);
+    }
+    
+    updateSystemAlerts() {
+        const container = document.getElementById('system-alerts-container');
+        const alerts = [];
+        
+        // Verificar sensores críticos
+        this.sensorsData.forEach(sensor => {
+            const status = this.calculateSensorStatus(sensor);
+            if (status.alert) {
+                alerts.push({
+                    type: 'danger',
+                    message: `Sensor ${sensor.sensor_id} en estado crítico: Temperatura ${sensor.temperatura}°C, Humedad ${sensor.humedad}%`,
+                    sensor: sensor.sensor_id
+                });
+            }
+        });
+        
+        // Verificar predicciones con bajo rendimiento
+        Object.entries(this.predictionsData).forEach(([planta, data]) => {
+            if (data.probabilidad_exito < 0.7) {
+                alerts.push({
+                    type: 'warning',
+                    message: `Baja probabilidad de éxito para ${planta}: ${(data.probabilidad_exito * 100).toFixed(0)}%`,
+                    planta: planta
+                });
+            }
+        });
+        
+        if (alerts.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let alertsHTML = '';
+        alerts.forEach(alert => {
+            alertsHTML += `
+                <div class="alert alert-${alert.type} alert-dismissible fade show mb-2" role="alert">
+                    <i class="fas fa-${alert.type === 'danger' ? 'exclamation-triangle' : 'exclamation-circle'} me-2"></i>
+                    ${alert.message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = alertsHTML;
+    }
+    
+    createEmptyState(message, icon = 'fas fa-inbox') {
+        return `
+            <div class="text-center py-4 text-muted">
+                <i class="${icon} fa-2x mb-2"></i>
+                <p class="small mb-0">${message}</p>
+            </div>
+        `;
+    }
+    
+    showLoadingStates() {
+        // Los spinners ya están en el HTML inicial
+    }
+    
+    hideLoadingStates() {
+        // Los spinners se ocultan cuando se cargan los datos
+    }
+    
+    handleError(error) {
+        this.retryCount++;
+        
+        if (this.retryCount <= this.maxRetries) {
+            console.log(`Reintentando en 5 segundos... (${this.retryCount}/${this.maxRetries})`);
+            setTimeout(() => this.loadData(), 5000);
+            return;
+        }
+        
+        document.getElementById('system-status').innerHTML = 
+            '<i class="fas fa-circle text-danger me-1"></i>Error de conexión';
+        
+        this.showErrorAlert(error);
+        console.error('Error en dashboard:', error);
+    }
+    
+    showErrorAlert(error) {
+        const alertHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Error del sistema:</strong> No se pueden cargar los datos. 
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="mt-2">
+                    <small>${error.message}</small>
+                </div>
+            </div>
+        `;
+        
+        const container = document.getElementById('system-alerts-container');
+        if (container && !container.querySelector('.alert-danger')) {
+            container.innerHTML = alertHTML + container.innerHTML;
+        }
+    }
+    
+    handleResize() {
+        if (this.yieldChart) {
+            this.yieldChart.resize();
+        }
+        if (document.getElementById('trends-chart').data) {
+            Plotly.Plots.resize(document.getElementById('trends-chart'));
+        }
+    }
+    
+    startAutoRefresh() {
+        this.refreshInterval = setInterval(() => this.loadData(), 30000); // 30 segundos
+    }
+    
+    stopAutoRefresh() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+        }
+    }
+    
+    toggleSensorView() {
+        this.sensorTableView = !this.sensorTableView;
+        const icon = document.getElementById('sensor-view-icon');
+        icon.className = this.sensorTableView ? 'fas fa-grip-vertical' : 'fas fa-table';
+        this.updateSensorsDisplay();
+    }
+}
+
+// Funciones globales
+function refreshDashboard() {
+    if (window.bioDashboard) {
+        window.bioDashboard.loadData();
+        const icon = event.target.closest('button').querySelector('i');
+        icon.classList.add('fa-spin');
+        setTimeout(() => icon.classList.remove('fa-spin'), 1000);
+    }
+}
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-bs-theme', newTheme);
+    
+    const icon = document.querySelector('.theme-toggle i');
+    icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    localStorage.setItem('theme', newTheme);
+    
+    // Actualizar gráficos cuando cambia el tema
+    if (window.bioDashboard) {
+        setTimeout(() => {
+            window.bioDashboard.updateTrendsChart();
+            if (window.bioDashboard.yieldChart) {
+                window.bioDashboard.yieldChart.update();
+            }
+        }, 100);
+    }
+}
+
+function toggleSensorView() {
+    if (window.bioDashboard) {
+        window.bioDashboard.toggleSensorView();
+    }
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-bs-theme', savedTheme);
+    
+    const themeIcon = document.querySelector('.theme-toggle i');
+    if (themeIcon) {
+        themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    
+    window.bioDashboard = new BioInvernaderoDashboard();
+});
+</script>
+{% endblock %}

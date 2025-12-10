@@ -1,0 +1,1126 @@
+<!-- dashboard/templates/index.html -->
+{% extends "base.html" %}
+
+{% block title %}Inicio - Bio-Invernadero{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-green: #a7f252ff;
+    --light-green: #dcedc8;
+    --dark-green: #389f60ff;
+    --accent-teal: #26a69a;
+    --accent-orange: #ff9800;
+    --accent-purple: #7e57c2;
+    --accent-blue: #29d9d9ff;
+    --neutral-light: #f5f5f5ff;
+    --neutral-dark: #424242;
+    --text-primary: #424242;
+    --text-secondary: #666;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+}
+
+[data-theme="dark"] {
+    --primary-green: #81C784;
+    --light-green: #2E7D32;
+    --dark-green: #1B5E20;
+    --accent-teal: #26a69a;
+    --accent-orange: #FF8F00;
+    --accent-purple: #7E57C2;
+    --accent-blue: #29B6F6;
+    --neutral-light: #2d2d2d;
+    --neutral-dark: #f5f5f5;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --card-bg: #2d2d2d;
+    --border-color: #404040;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+    animation: float 20s infinite linear;
+}
+
+/* Nuevos elementos decorativos */
+.hero-decoration {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.hero-plant {
+    position: absolute;
+    font-size: 8rem;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.hero-plant-1 {
+    top: 10%;
+    left: 5%;
+    transform: rotate(-15deg);
+}
+
+.hero-plant-2 {
+    bottom: 10%;
+    right: 5%;
+    transform: rotate(15deg);
+}
+
+@keyframes float {
+    0% { transform: translateX(0) translateY(0); }
+    100% { transform: translateX(-100px) translateY(-100px); }
+}
+
+/* Tarjetas mejoradas con modo oscuro */
+.feature-card {
+    border: none;
+    border-radius: 15px;
+    padding: 2rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    background: var(--card-bg);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-green), var(--accent-teal));
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+/* Tarjetas de estadísticas con modo oscuro */
+.stats-card {
+    color: white;
+    border-radius: 15px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+    height: 100%;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+    z-index: 1;
+}
+
+.stats-card-content {
+    position: relative;
+    z-index: 2;
+}
+
+.stats-card:nth-child(1) {
+    background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+}
+
+.stats-card:nth-child(2) {
+    background: linear-gradient(135deg, var(--accent-teal), #00897b);
+}
+
+.stats-card:nth-child(3) {
+    background: linear-gradient(135deg, var(--accent-orange), #f57c00);
+}
+
+.stats-card:hover {
+    transform: scale(1.05);
+}
+
+/* Sistema de estado mejorado con modo oscuro */
+.system-status-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border: none;
+    transition: all 0.3s ease;
+    height: 100%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.system-status-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+}
+
+.system-status-card:nth-child(1)::before {
+    background: var(--primary-green);
+}
+
+.system-status-card:nth-child(2)::before {
+    background: var(--accent-orange);
+}
+
+.system-status-card:nth-child(3)::before {
+    background: var(--accent-teal);
+}
+
+.system-status-card:nth-child(4)::before {
+    background: var(--accent-purple);
+}
+
+.system-status-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.system-status-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.system-status-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-green);
+    margin-bottom: 0.5rem;
+}
+
+.system-status-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Estado de conexión del sistema con modo oscuro */
+.system-health-card {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    color: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.system-health-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.health-status {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255,255,255,0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+}
+
+/* Sección de características con modo oscuro */
+.features-section {
+    position: relative;
+    overflow: hidden;
+    background: var(--neutral-light);
+}
+
+.feature-icon-container {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    background: var(--light-green);
+    color: var(--dark-green);
+    font-size: 2rem;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon-container {
+    transform: scale(1.1);
+    background: var(--primary-green);
+    color: white;
+}
+
+/* Responsive Typography */
+.hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Elementos visuales adicionales */
+.visual-element {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.visual-element-1 {
+    width: 200px;
+    height: 200px;
+    background: var(--accent-teal);
+    top: -50px;
+    right: -50px;
+}
+
+.visual-element-2 {
+    width: 150px;
+    height: 150px;
+    background: var(--accent-orange);
+    bottom: -30px;
+    left: -30px;
+}
+
+/* Indicadores de estado visuales */
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-online {
+    background-color: var(--primary-green);
+    box-shadow: 0 0 8px var(--primary-green);
+}
+
+.status-warning {
+    background-color: var(--accent-orange);
+    box-shadow: 0 0 8px var(--accent-orange);
+}
+
+.status-offline {
+    background-color: #f44336;
+    box-shadow: 0 0 8px #f44336;
+}
+
+/* Mobile First Adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 60px 0;
+    }
+    
+    .feature-card {
+        padding: 1.5rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .stats-card {
+        padding: 1rem 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .system-status-card {
+        padding: 1.25rem 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .system-status-value {
+        font-size: 1.75rem;
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .hero-plant {
+        font-size: 5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 40px 0;
+    }
+    
+    .feature-card {
+        padding: 1rem 0.75rem;
+    }
+    
+    .stats-grid {
+        gap: 0.5rem;
+    }
+    
+    .system-status-card {
+        padding: 1rem 0.75rem;
+    }
+    
+    .system-status-value {
+        font-size: 1.5rem;
+    }
+    
+    .feature-icon-container {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+}
+
+/* Grid improvements for better responsiveness */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.system-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Loading animations */
+.loading-pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Badges decorativos */
+.decorative-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.badge-green {
+    background-color: var(--light-green);
+    color: var(--dark-green);
+}
+
+.badge-teal {
+    background-color: #e0f2f1;
+    color: var(--accent-teal);
+}
+
+.badge-orange {
+    background-color: #ffe0b2;
+    color: var(--accent-orange);
+}
+
+/* Modo oscuro para badges */
+[data-theme="dark"] .badge-green {
+    background-color: var(--dark-green);
+    color: var(--light-green);
+}
+
+[data-theme="dark"] .badge-teal {
+    background-color: #004d40;
+    color: #80cbc4;
+}
+
+[data-theme="dark"] .badge-orange {
+    background-color: #e65100;
+    color: #ffd180;
+}
+
+/* Secciones con fondo adaptativo */
+.bg-light-adaptive {
+    background: var(--neutral-light) !important;
+}
+
+.text-muted-adaptive {
+    color: var(--text-secondary) !important;
+}
+
+/* Mejoras para textos en modo oscuro */
+[data-theme="dark"] .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .feature-card p.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Skeleton loading states */
+.skeleton {
+    background: linear-gradient(90deg, var(--neutral-light) 25%, var(--border-color) 50%, var(--neutral-light) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+    height: 2rem;
+    width: 80%;
+    margin: 0 auto 1rem;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Nuevos elementos decorativos para secciones */
+.section-divider {
+    height: 3px;
+    width: 80px;
+    background: linear-gradient(90deg, var(--primary-green), var(--accent-teal));
+    margin: 0 auto 2rem;
+    border-radius: 3px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-decoration">
+        <div class="hero-plant hero-plant-1">
+            <i class="fas fa-seedling"></i>
+        </div>
+        <div class="hero-plant hero-plant-2">
+            <i class="fas fa-leaf"></i>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10 col-xl-8">
+                <span class="decorative-badge badge-green">
+                    <i class="fas fa-rocket me-1"></i>SISTEMA ACTIVO
+                </span>
+                
+                <h1 class="hero-title">
+                    <i class="fas fa-seedling me-2 me-md-3"></i>
+                    Bio-Invernadero Inteligente
+                </h1>
+                <p class="hero-subtitle">
+                    Sistema avanzado de monitoreo en tiempo real y predicción IA 
+                    para el cultivo de rábanos y cilantro
+                </p>
+                
+                <!-- Responsive Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="stats-card-content">
+                            <i class="fas fa-microchip fa-2x fa-fw mb-2 mb-md-3"></i>
+                            <h4 class="mb-1" id="total-sensores">--</h4>
+                            <p class="mb-0 small">Sensores Activos</p>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-card-content">
+                            <i class="fas fa-thermometer-half fa-2x fa-fw mb-2 mb-md-3"></i>
+                            <h4 class="mb-1" id="temp-promedio">--°C</h4>
+                            <p class="mb-0 small">Temperatura Promedio</p>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <div class="stats-card-content">
+                            <i class="fas fa-chart-line fa-2x fa-fw mb-2 mb-md-3"></i>
+                            <h4 class="mb-1" id="predicciones-activas">--</h4>
+                            <p class="mb-0 small">Predicciones Activas</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons for Mobile -->
+                <div class="hero-buttons mt-4 d-block d-md-none">
+                    <a href="{{ url_for('monitor') }}" class="btn btn-light btn-lg me-2 mb-2">
+                        <i class="fas fa-heartbeat me-2"></i>Monitoreo
+                    </a>
+                    <a href="{{ url_for('predicciones') }}" class="btn btn-outline-light btn-lg mb-2">
+                        <i class="fas fa-crystal-ball me-2"></i>Predicciones
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 features-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Características Principales</h2>
+            <div class="section-divider"></div>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-icon-container">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <h4 class="text-center mb-3">Monitoreo en Tiempo Real</h4>
+                <p class="text-muted mb-4 text-center">
+                    Supervisa temperatura, humedad, pH, nutrientes y más con actualizaciones cada 30 segundos
+                </p>
+                <div class="d-grid">
+                    <a href="{{ url_for('monitor') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-heartbeat me-2"></i>Ver Monitoreo
+                    </a>
+                </div>
+            </div>
+            
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-icon-container">
+                    <i class="fas fa-crystal-ball"></i>
+                </div>
+                <h4 class="text-center mb-3">Predicciones IA</h4>
+                <p class="text-muted mb-4 text-center">
+                    Algoritmos de machine learning que predicen rendimiento y días para cosecha
+                </p>
+                <div class="d-grid">
+                    <a href="{{ url_for('predicciones') }}" class="btn btn-warning btn-lg">
+                        <i class="fas fa-crystal-ball me-2"></i>Ver Predicciones
+                    </a>
+                </div>
+            </div>
+            
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-icon-container">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h4 class="text-center mb-3">Analíticas Avanzadas</h4>
+                <p class="text-muted mb-4 text-center">
+                    Dashboard interactivo con gráficos y tendencias para toma de decisiones
+                </p>
+                <div class="d-grid">
+                    <a href="{{ url_for('analytics') }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-chart-line me-2"></i>Ver Analíticas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Estado del Sistema - Versión Mejorada -->
+<section class="py-5 bg-light-adaptive position-relative">
+    <div class="visual-element visual-element-1"></div>
+    <div class="visual-element visual-element-2"></div>
+    
+    <div class="container position-relative" style="z-index: 1;">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Estado del Sistema</h2>
+            <div class="section-divider"></div>
+        </div>
+        
+        <!-- Grid de Estadísticas del Sistema -->
+        <div class="system-status-grid" id="quick-stats">
+            <div class="system-status-card">
+                <div class="system-status-icon text-success">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="system-status-value" id="plantas-activas">--</div>
+                <div class="system-status-label">Plantas Monitoreadas</div>
+            </div>
+            
+            <div class="system-status-card">
+                <div class="system-status-icon text-warning">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="system-status-value" id="alertas-activas">0</div>
+                <div class="system-status-label">Alertas Activas</div>
+            </div>
+            
+            <div class="system-status-card">
+                <div class="system-status-icon text-info">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="system-status-value" id="eficiencia-sistema">--%</div>
+                <div class="system-status-label">Eficiencia del Sistema</div>
+            </div>
+            
+            <div class="system-status-card">
+                <div class="system-status-icon text-secondary">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="system-status-value" id="uptime">--%</div>
+                <div class="system-status-label">Uptime</div>
+            </div>
+        </div>
+
+        <!-- Estado de Salud del Sistema -->
+        <div class="system-health-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-2">
+                        <span class="status-indicator status-online"></span>
+                        Estado de Conexión del Sistema
+                    </h5>
+                    <p class="mb-0 opacity-75" id="connection-details">
+                        Todos los sistemas funcionando correctamente
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="health-status">
+                        <i class="fas fa-circle me-2 text-success"></i>
+                        <span id="health-text">SALUDABLE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información Móvil Adicional -->
+        <div class="row mt-4 d-block d-md-none">
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <small>
+                        <i class="fas fa-mobile-alt me-2"></i>
+                        Usa la app móvil para recibir notificaciones instantáneas
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Contact Section (Mobile Only) -->
+<div class="fixed-bottom d-block d-md-none">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <div class="card shadow-lg mb-3">
+                    <div class="card-body py-2 text-center">
+                        <small class="text-muted-adaptive">
+                            <i class="fas fa-phone-alt me-1 text-danger"></i>
+                            Soporte técnico: 24/7
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+class DashboardInicio {
+    constructor() {
+        this.isMobile = window.innerWidth < 768;
+        this.initResponsiveFeatures();
+        this.loadData();
+        setInterval(() => this.loadData(), 10000);
+        
+        // Escuchar cambios de tema
+        window.addEventListener('themeChanged', (event) => {
+            this.handleThemeChange(event.detail.theme);
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            this.isMobile = window.innerWidth < 768;
+            this.adjustLayoutForMobile();
+        });
+    }
+    
+    initResponsiveFeatures() {
+        // Initialize tooltips for better mobile UX
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        this.adjustLayoutForMobile();
+    }
+    
+    adjustLayoutForMobile() {
+        const heroButtons = document.querySelector('.hero-buttons');
+        if (this.isMobile && !heroButtons) {
+            console.log('Mobile layout activated');
+        }
+    }
+    
+    handleThemeChange(theme) {
+        console.log('Tema cambiado a:', theme);
+        // Aquí puedes agregar lógica específica cuando cambia el tema
+        if (theme === 'dark') {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+    }
+    
+    async loadData() {
+        try {
+            // Show loading states
+            this.showLoadingStates();
+            
+            // ✅ CONSULTAR DATOS REALES de la base de datos
+            const data = await this.fetchRealData();
+            
+            if (data.estadisticas) {
+                this.updateStats(data);
+            }
+            
+            this.updateSystemStatus();
+            
+        } catch (error) {
+            console.error('Error:', error);
+            this.handleErrorState();
+        } finally {
+            this.hideLoadingStates();
+        }
+    }
+    
+    // ✅ NUEVA FUNCIÓN: Consultar datos reales de la base de datos
+    async fetchRealData() {
+        try {
+            // Hacer múltiples llamadas a tus APIs reales
+            const [estadoResponse, metricasResponse] = await Promise.all([
+                fetch('/api/estado_actual'),
+                fetch('/api/metricas_rendimiento')
+            ]);
+            
+            if (!estadoResponse.ok || !metricasResponse.ok) {
+                throw new Error('Error en la respuesta de la API');
+            }
+            
+            const estadoData = await estadoResponse.json();
+            const metricasData = await metricasResponse.json();
+            
+            // Calcular alertas basadas en datos reales
+            const alertasActivas = this.calculateAlerts(estadoData.sensores || []);
+            
+            return {
+                estadisticas: {
+                    total_sensores: estadoData.estadisticas?.total_sensores || 0,
+                    temp_promedio: estadoData.estadisticas?.temp_promedio || 0,
+                    hum_promedio: estadoData.estadisticas?.hum_promedio || 0,
+                    predicciones_activas: Object.keys(estadoData.predicciones || {}).length,
+                    alertas_activas: alertasActivas
+                },
+                sensores: estadoData.sensores || [],
+                metricas: metricasData,
+                timestamp: new Date().toISOString()
+            };
+            
+        } catch (error) {
+            console.error('Error fetching real data:', error);
+            throw error;
+        }
+    }
+    
+    // ✅ NUEVA FUNCIÓN: Calcular alertas basadas en datos reales de sensores
+    calculateAlerts(sensores) {
+        let alertCount = 0;
+        
+        sensores.forEach(sensor => {
+            // Alertas basadas en rangos óptimos para plantas
+            if (sensor.temperatura < 18 || sensor.temperatura > 28) {
+                alertCount++;
+            }
+            if (sensor.humedad < 50 || sensor.humedad > 80) {
+                alertCount++;
+            }
+            if (sensor.ph < 5.5 || sensor.ph > 7.5) {
+                alertCount++;
+            }
+            if (sensor.nutrientes < 1.0 || sensor.nutrientes > 2.5) {
+                alertCount++;
+            }
+        });
+        
+        return alertCount;
+    }
+    
+    updateStats(data) {
+        // Update main stats with REAL data
+        document.getElementById('total-sensores').textContent = data.estadisticas.total_sensores || '0';
+        document.getElementById('temp-promedio').textContent = (data.estadisticas.temp_promedio || 0).toFixed(1) + '°C';
+        document.getElementById('plantas-activas').textContent = data.sensores ? data.sensores.length : '0';
+        
+        // Calcular eficiencia basada en datos reales
+        const eficiencia = this.calculateEfficiency(data.sensores || []);
+        document.getElementById('eficiencia-sistema').textContent = eficiencia + '%';
+        
+        // Uptime basado en datos reales (podrías obtenerlo de una API específica)
+        const uptime = this.calculateUptime(data.sensores || []);
+        document.getElementById('uptime').textContent = uptime + '%';
+        
+        // Update active predictions
+        document.getElementById('predicciones-activas').textContent = data.estadisticas.predicciones_activas || '0';
+        
+        // Update active alerts
+        const alertas = data.estadisticas.alertas_activas || 0;
+        document.getElementById('alertas-activas').textContent = alertas;
+        
+        // Update navbar badge if alerts exist
+        const alertBadge = document.getElementById('alert-badge');
+        if (alertas > 0 && alertBadge) {
+            alertBadge.classList.remove('d-none');
+            alertBadge.textContent = alertas;
+        } else if (alertBadge) {
+            alertBadge.classList.add('d-none');
+        }
+        
+        // Update health status
+        this.updateHealthStatus(alertas, eficiencia);
+    }
+    
+    // ✅ NUEVA FUNCIÓN: Calcular eficiencia basada en datos reales
+    calculateEfficiency(sensores) {
+        if (sensores.length === 0) return 0;
+        
+        let sensoresOptimos = 0;
+        
+        sensores.forEach(sensor => {
+            const tempOk = sensor.temperatura >= 20 && sensor.temperatura <= 26;
+            const humOk = sensor.humedad >= 55 && sensor.humedad <= 75;
+            const phOk = sensor.ph >= 6.0 && sensor.ph <= 7.0;
+            
+            if (tempOk && humOk && phOk) {
+                sensoresOptimos++;
+            }
+        });
+        
+        return ((sensoresOptimos / sensores.length) * 100).toFixed(1);
+    }
+    
+    // ✅ NUEVA FUNCIÓN: Calcular uptime basado en datos reales
+    calculateUptime(sensores) {
+        if (sensores.length === 0) return 0;
+        
+        // Simular uptime basado en la cantidad de sensores activos
+        // En una implementación real, esto vendría de una métrica del sistema
+        const sensoresActivos = sensores.filter(s => {
+            // Considerar sensor activo si tiene datos recientes (menos de 1 hora)
+            if (s.timestamp) {
+                const lastUpdate = new Date(s.timestamp);
+                const now = new Date();
+                const diffHours = (now - lastUpdate) / (1000 * 60 * 60);
+                return diffHours < 1;
+            }
+            return true;
+        }).length;
+        
+        const uptime = (sensoresActivos / sensores.length) * 100;
+        return uptime.toFixed(1);
+    }
+    
+    updateHealthStatus(alertas, eficiencia) {
+        const healthText = document.getElementById('health-text');
+        const healthIcon = document.querySelector('.health-status i');
+        const connectionDetails = document.getElementById('connection-details');
+        const statusIndicator = document.querySelector('.status-indicator');
+        
+        if (alertas > 0 || eficiencia < 80) {
+            healthText.textContent = 'ATENCIÓN';
+            healthIcon.className = 'fas fa-circle me-2 text-warning';
+            connectionDetails.textContent = 'Se detectaron alertas en el sistema';
+            if (statusIndicator) {
+                statusIndicator.className = 'status-indicator status-warning';
+            }
+        } else if (eficiencia < 90) {
+            healthText.textContent = 'ESTABLE';
+            healthIcon.className = 'fas fa-circle me-2 text-info';
+            connectionDetails.textContent = 'Sistema funcionando con advertencias menores';
+            if (statusIndicator) {
+                statusIndicator.className = 'status-indicator status-online';
+            }
+        } else {
+            healthText.textContent = 'SALUDABLE';
+            healthIcon.className = 'fas fa-circle me-2 text-success';
+            connectionDetails.textContent = 'Todos los sistemas funcionando correctamente';
+            if (statusIndicator) {
+                statusIndicator.className = 'status-indicator status-online';
+            }
+        }
+    }
+    
+    updateSystemStatus() {
+        const statusText = document.getElementById('status-text');
+        const lastUpdate = document.getElementById('last-update');
+        
+        if (statusText) {
+            statusText.textContent = 'Sistema Conectado';
+        }
+        if (lastUpdate) {
+            lastUpdate.textContent = 'Última actualización: ' + new Date().toLocaleTimeString();
+        }
+    }
+    
+    showLoadingStates() {
+        // Add loading animation to stats
+        const statsElements = [
+            'total-sensores', 'temp-promedio', 'predicciones-activas',
+            'plantas-activas', 'alertas-activas', 'eficiencia-sistema', 'uptime'
+        ];
+        
+        statsElements.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.classList.add('loading-pulse');
+                // Add skeleton effect
+                if (!element.classList.contains('skeleton')) {
+                    const originalContent = element.textContent;
+                    element.setAttribute('data-original', originalContent);
+                    element.innerHTML = '<div class="skeleton skeleton-title"></div>';
+                }
+            }
+        });
+    }
+    
+    hideLoadingStates() {
+        // Remove loading animation
+        const statsElements = [
+            'total-sensores', 'temp-promedio', 'predicciones-activas',
+            'plantas-activas', 'alertas-activas', 'eficiencia-sistema', 'uptime'
+        ];
+        
+        statsElements.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.classList.remove('loading-pulse');
+                // Restore original content
+                const originalContent = element.getAttribute('data-original');
+                if (originalContent && element.querySelector('.skeleton')) {
+                    element.textContent = originalContent;
+                }
+            }
+        });
+    }
+    
+    handleErrorState() {
+        const statusText = document.getElementById('status-text');
+        if (statusText) {
+            statusText.textContent = 'Sistema Desconectado';
+        }
+        
+        // Show error state in stats
+        const statsElements = [
+            'total-sensores', 'temp-promedio', 'predicciones-activas',
+            'plantas-activas', 'alertas-activas', 'eficiencia-sistema', 'uptime'
+        ];
+        
+        statsElements.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = '--';
+            }
+        });
+        
+        // Update health status to error
+        const healthText = document.getElementById('health-text');
+        const healthIcon = document.querySelector('.health-status i');
+        const connectionDetails = document.getElementById('connection-details');
+        const statusIndicator = document.querySelector('.status-indicator');
+        
+        if (healthText && healthIcon && connectionDetails) {
+            healthText.textContent = 'ERROR';
+            healthIcon.className = 'fas fa-circle me-2 text-danger';
+            connectionDetails.textContent = 'Error de conexión con el servidor';
+            
+            if (statusIndicator) {
+                statusIndicator.className = 'status-indicator status-offline';
+            }
+        }
+        
+        // Show connection error alert
+        if (typeof showSystemNotification === 'function') {
+            showSystemNotification('Error de conexión con el servidor', 'danger');
+        }
+    }
+}
+
+// Initialize dashboard when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new DashboardInicio();
+});
+
+// Handle page visibility changes for better performance
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        console.log('Page is hidden - reducing update frequency');
+    } else {
+        console.log('Page is visible - resuming normal updates');
+    }
+});
+
+// Initialize AOS animations if available
+if (typeof AOS !== 'undefined') {
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,1527 @@
+<!-- dashboard/templates/reportes.html -->
+{% extends "base.html" %}
+
+{% block title %}Reportes - Bio-Invernadero{% endblock %}
+
+{% block extra_css %}
+<style>
+:root {
+    --primary-color: #2e7d32;
+    --secondary-color: #4caf50;
+    --warning-color: #ff9800;
+    --danger-color: #f44336;
+    --info-color: #2196f3;
+}
+
+.reports-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.reports-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translateX(0) translateY(0); }
+    100% { transform: translateX(-100px) translateY(-100px); }
+}
+
+.report-card {
+    background: var(--bs-body-bg);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    border: 1px solid var(--bs-border-color);
+    transition: all 0.3s ease;
+}
+
+.report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.export-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: none;
+}
+
+.metric-badge {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+}
+
+.table-responsive {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--bs-border-color);
+}
+
+.export-btn {
+    transition: all 0.3s ease;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    background: white;
+    color: #333;
+}
+
+.export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    background: #f8f9fa;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 3rem;
+    color: var(--bs-secondary-color);
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Filtros mejorados */
+.filter-section {
+    background: var(--bs-body-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--bs-border-color);
+}
+
+.date-filter {
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.quick-filter-btn {
+    border-radius: 20px;
+    margin: 0.2rem;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.quick-filter-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--bs-body-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid var(--bs-border-color);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .reports-header {
+        padding: 1.5rem 0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .report-card {
+        padding: 1.5rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .report-card {
+        padding: 1.25rem;
+    }
+    
+    .stat-value {
+        font-size: 1.75rem;
+    }
+}
+
+/* Skeleton loading */
+.skeleton {
+    background: linear-gradient(90deg, var(--bs-border-color) 25%, var(--bs-body-bg) 50%, var(--bs-border-color) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-text {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-title {
+    height: 1.5rem;
+    width: 60%;
+    margin: 0 auto 1rem;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Nuevos estilos para filtros de hora */
+.time-filter-group {
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.time-filter-row {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+}
+
+.time-input-group {
+    flex: 1;
+}
+
+.time-input-group label {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: var(--bs-body-color);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.filter-actions .btn {
+    flex: 1;
+}
+
+[data-theme="dark"] .reports-header {
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    color: #e5e7eb;
+}
+
+[data-theme="dark"] .reports-header::before {
+    opacity: 0.15;
+}
+
+[data-theme="dark"] .export-section {
+    background: linear-gradient(135deg, #1f2937 0%, #0f172a 100%);
+    color: #e5e7eb;
+    border: 1px solid var(--bs-border-color);
+}
+
+[data-theme="dark"] .report-card,
+[data-theme="dark"] .filter-section,
+[data-theme="dark"] .date-filter,
+[data-theme="dark"] .time-filter-group {
+    background: #111827;
+    border-color: #1f2937;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+[data-theme="dark"] .stat-card {
+    background: linear-gradient(135deg, #111827, #0b1222);
+    border-color: #1f2937;
+}
+
+[data-theme="dark"] .export-btn {
+    background: #0b1222;
+    color: #e5e7eb;
+    border: 1px solid #1f2937;
+}
+
+[data-theme="dark"] .export-btn:hover {
+    background: #111827;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .alert-info {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #cbd5f5;
+    border-color: #1f2937;
+}
+
+[data-theme="dark"] .table-responsive {
+    border-color: #1f2937;
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Diagrama BI */
+.bi-model-card h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.bi-model {
+    width: 100%;
+    max-height: 350px;
+    min-height: 300px;
+    overflow: auto;
+}
+
+.bi-model svg {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+}
+
+.bi-node rect {
+    fill: var(--bs-body-bg);
+    stroke: var(--bs-border-color);
+    stroke-width: 2;
+    rx: 12;
+    ry: 12;
+}
+
+.bi-node text {
+    fill: var(--bs-body-color);
+    font-weight: 700;
+}
+
+.bi-node .subtitle {
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.bi-node text {
+    font-size: 13px;
+}
+
+.bi-link {
+    stroke: var(--bs-border-color);
+    stroke-width: 1.5;
+    marker-end: url(#arrow);
+}
+
+[data-theme="dark"] .bi-node rect {
+    fill: #0f172a;
+    stroke: #1f2937;
+}
+
+[data-theme="dark"] .bi-node text {
+    fill: #e5e7eb;
+}
+
+[data-theme="dark"] .bi-link {
+    stroke: #334155;
+}
+
+@media (max-width: 768px) {
+    .time-filter-row {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .time-input-group {
+        width: 100%;
+    }
+    
+    .filter-actions {
+        flex-direction: column;
+    }
+    
+    .filter-actions .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header de Reportes -->
+<div class="reports-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-chart-bar me-3"></i>Reportes y Análisis
+                </h1>
+                <p class="lead mb-0">Análisis detallado y reportes del sistema Bio-Invernadero</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="btn-group">
+                    <button class="btn btn-light btn-lg" onclick="refreshReports()" id="refresh-btn">
+                        <i class="fas fa-sync-alt me-2"></i>Actualizar
+                    </button>
+                    <button class="btn btn-outline-light btn-lg" onclick="showExportOptions()">
+                        <i class="fas fa-download me-2"></i>Exportar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Filtros de Fecha y Hora -->
+    <div class="filter-section">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h4 class="mb-3">
+                    <i class="fas fa-filter me-2"></i>Filtros de Fecha y Hora
+                </h4>
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label"><i class="fas fa-calendar-start me-2"></i>Fecha Inicio</label>
+                        <input type="date" class="form-control" id="start-date" value="{{ today }}">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label"><i class="fas fa-calendar-end me-2"></i>Fecha Fin</label>
+                        <input type="date" class="form-control" id="end-date" value="{{ today }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <button class="btn btn-primary w-100" onclick="applyDateFilter()">
+                            <i class="fas fa-check me-1"></i>Aplicar
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Filtros de Hora -->
+                <div class="time-filter-group">
+                    <h6 class="mb-3">
+                        <i class="fas fa-clock me-2"></i>Filtros de Hora (Opcional)
+                    </h6>
+                    <div class="time-filter-row">
+                        <div class="time-input-group">
+                            <label class="form-label">Hora Inicio</label>
+                            <input type="time" class="form-control" id="start-time" value="00:00">
+                        </div>
+                        <div class="time-input-group">
+                            <label class="form-label">Hora Fin</label>
+                            <input type="time" class="form-control" id="end-time" value="23:59">
+                        </div>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-outline-primary" onclick="setFullDay()">
+                            <i class="fas fa-sun me-1"></i>Día Completo
+                        </button>
+                        <button class="btn btn-outline-success" onclick="setMorning()">
+                            <i class="fas fa-coffee me-1"></i>Mañana (6:00-12:00)
+                        </button>
+                        <button class="btn btn-outline-warning" onclick="setAfternoon()">
+                            <i class="fas fa-sun me-1"></i>Tarde (12:00-18:00)
+                        </button>
+                        <button class="btn btn-outline-info" onclick="setNight()">
+                            <i class="fas fa-moon me-1"></i>Noche (18:00-24:00)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label"><i class="fas fa-bolt me-2"></i>Filtros Rápidos</label>
+                <div class="btn-group w-100 flex-wrap">
+                    <button class="btn btn-outline-primary quick-filter-btn active" onclick="setDateFilter('today')">
+                        Hoy
+                    </button>
+                    <button class="btn btn-outline-primary quick-filter-btn" onclick="setDateFilter('yesterday')">
+                        Ayer
+                    </button>
+                    <button class="btn btn-outline-primary quick-filter-btn" onclick="setDateFilter('week')">
+                        7 Días
+                    </button>
+                    <button class="btn btn-outline-primary quick-filter-btn" onclick="setDateFilter('month')">
+                        30 Días
+                    </button>
+                </div>
+                <div class="mt-2">
+                    <button class="btn btn-outline-danger w-100" onclick="clearFilters()">
+                        <i class="fas fa-times me-1"></i>Limpiar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <span id="date-range-info">Mostrando datos del día de hoy</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas Resumen -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon text-danger">
+                <i class="fas fa-thermometer-half"></i>
+            </div>
+            <div class="stat-value" id="total-sensores">--</div>
+            <div class="stat-label">Sensores Activos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon text-success">
+                <i class="fas fa-seedling"></i>
+            </div>
+            <div class="stat-value" id="total-plantas">--</div>
+            <div class="stat-label">Plantas Monitoreadas</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon text-primary">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-value" id="total-predicciones">--</div>
+            <div class="stat-label">Predicciones Generadas</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon text-warning">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-value" id="dias-activo">--</div>
+            <div class="stat-label">Datos en Período</div>
+        </div>
+    </div>
+
+    <!-- Sección de Exportación -->
+    <div class="export-section">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h3 class="mb-2"><i class="fas fa-download me-2"></i>Exportar Reportes</h3>
+                <p class="mb-0" id="export-info">Descarga reportes completos del período seleccionado</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="btn-group-vertical w-100">
+                    <button class="btn btn-light export-btn mb-2" onclick="exportToPDF()">
+                        <i class="fas fa-file-pdf me-2"></i>Exportar a PDF
+                    </button>
+                    <button class="btn btn-light export-btn" onclick="exportToCSV()">
+                        <i class="fas fa-file-csv me-2"></i>Exportar a CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Modelo de Datos BI -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="report-card bi-model-card">
+            <h4 class="mb-2">
+                <i class="fas fa-project-diagram"></i>
+                Modelo de Datos (Esquema Estrella)
+            </h4>
+            <p class="text-muted mb-3">
+                Diagrama conceptual para análisis BI: dos tablas de hechos (mediciones y predicciones) conectadas a dimensiones de tiempo, planta, sensor y ubicación.
+            </p>
+            <div class="bi-model" style="overflow-x: auto; overflow-y: visible;">
+<svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Esquema estrella para BI" style="max-width: 100%; height: 350px;">
+    <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="10" refY="5" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"></path>
+        </marker>
+    </defs>
+
+    <!-- Dimensiones -->
+    <g class="bi-node" transform="translate(150,40)">
+        <rect width="160" height="60"></rect>
+        <text x="15" y="28">Dim_Tiempo</text>
+        <text class="subtitle" x="15" y="45">fecha, hora, día_semana</text>
+    </g>
+
+    <g class="bi-node" transform="translate(480,40)">
+        <rect width="160" height="60"></rect>
+        <text x="15" y="28">Dim_Planta</text>
+        <text class="subtitle" x="15" y="45">tipo, estado, lote</text>
+    </g>
+
+    <g class="bi-node" transform="translate(810,40)">
+        <rect width="160" height="60"></rect>
+        <text x="15" y="28">Dim_Sensor</text>
+        <text class="subtitle" x="15" y="45">id, tipo, firmware</text>
+    </g>
+
+    <g class="bi-node" transform="translate(150,240)">
+        <rect width="160" height="60"></rect>
+        <text x="15" y="28">Dim_Ubicacion</text>
+        <text class="subtitle" x="15" y="45">invernadero, rack, posición</text>
+    </g>
+
+    <!-- Hechos -->
+    <g class="bi-node" transform="translate(480,160)">
+        <rect width="180" height="70"></rect>
+        <text x="15" y="28">Fact_Mediciones</text>
+        <text class="subtitle" x="15" y="48">temp, humedad, pH, luz, CO₂</text>
+    </g>
+
+    <g class="bi-node" transform="translate(480,270)">
+        <rect width="180" height="70"></rect>
+        <text x="15" y="28">Fact_Predicciones</text>
+        <text class="subtitle" x="15" y="48">rendimiento, confianza, modelo</text>
+    </g>
+
+    <!-- Conexiones a Fact_Mediciones -->
+    <line class="bi-link" x1="310" y1="100" x2="480" y2="195"></line>
+    <line class="bi-link" x1="640" y1="100" x2="660" y2="195"></line>
+    <line class="bi-link" x1="890" y1="100" x2="660" y2="195"></line>
+    <line class="bi-link" x1="310" y1="270" x2="480" y2="195"></line>
+
+    <!-- Conexiones a Fact_Predicciones -->
+    <line class="bi-link" x1="310" y1="100" x2="480" y2="305"></line>
+    <line class="bi-link" x1="640" y1="100" x2="660" y2="305"></line>
+    <line class="bi-link" x1="890" y1="100" x2="660" y2="305"></line>
+    <line class="bi-link" x1="310" y1="270" x2="480" y2="305"></line>
+</svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Gráficos de Resumen -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="report-card">
+                <h4 class="mb-3">
+                    <i class="fas fa-chart-pie me-2"></i>Distribución de Sensores
+                </h4>
+                <div class="chart-container">
+                    <canvas id="sensors-chart"></canvas>
+                </div>
+                <div id="sensors-chart-loading" class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                    <p class="mb-0">Cargando distribución de sensores...</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="report-card">
+                <h4 class="mb-3">
+                    <i class="fas fa-chart-bar me-2"></i>Rendimiento por Planta
+                </h4>
+                <div class="chart-container">
+                    <canvas id="yield-chart"></canvas>
+                </div>
+                <div id="yield-chart-loading" class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                    <p class="mb-0">Cargando datos de rendimiento...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tablas de Datos -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="report-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-microchip me-2"></i>Datos de Sensores
+                    </h4>
+                    <span class="badge bg-primary rounded-pill" id="sensors-count">--</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="sensors-table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Sensor</th>
+                                <th>Temperatura</th>
+                                <th>Humedad</th>
+                                <th>pH</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sensors-tbody">
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    <div class="loading-spinner py-3">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p class="mb-0 mt-2">Cargando datos de sensores...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="report-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">
+                        <i class="fas fa-crystal-ball me-2"></i>Predicciones
+                    </h4>
+                    <span class="badge bg-info rounded-pill" id="predictions-count">--</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover" id="predictions-table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Planta</th>
+                                <th>Rendimiento</th>
+                                <th>Confianza</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="predictions-tbody">
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    <div class="loading-spinner py-3">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p class="mb-0 mt-2">Cargando predicciones...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporte Detallado -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="report-card">
+                <h4 class="mb-3">
+                    <i class="fas fa-file-alt me-2"></i>Reporte de Estado del Sistema
+                </h4>
+                <div id="system-report">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+                        <p class="mb-0">Generando reporte del sistema...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script>
+// Configuración global
+const { jsPDF } = window.jspdf;
+
+class ReportsDashboard {
+    constructor() {
+        this.sensorsData = [];
+        this.predictionsData = [];
+        this.metricsData = {};
+        this.charts = {};
+        this.dateFilter = {
+            startDate: new Date().toISOString().split('T')[0],
+            endDate: new Date().toISOString().split('T')[0],
+            startTime: '00:00',
+            endTime: '23:59'
+        };
+        this.init();
+    }
+    
+    init() {
+        this.initializeDateFilters();
+        this.loadData();
+        setInterval(() => this.loadData(), 15000);
+    }
+    
+    initializeDateFilters() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('start-date').value = today;
+        document.getElementById('end-date').value = today;
+        document.getElementById('start-time').value = '00:00';
+        document.getElementById('end-time').value = '23:59';
+        this.updateDateRangeInfo();
+    }
+    
+    setDateFilter(range) {
+        const today = new Date();
+        let startDate = new Date();
+        let endDate = new Date();
+        
+        switch(range) {
+            case 'today':
+                startDate = today;
+                endDate = today;
+                break;
+            case 'yesterday':
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() - 1);
+                endDate = new Date(today);
+                endDate.setDate(today.getDate() - 1);
+                break;
+            case 'week':
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() - 7);
+                endDate = today;
+                break;
+            case 'month':
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = today;
+                break;
+        }
+        
+        document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
+        document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
+        
+        // Actualizar botones activos
+        document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        this.updateDateRangeInfo();
+        this.applyDateFilter();
+    }
+    
+    applyDateFilter() {
+        this.dateFilter.startDate = document.getElementById('start-date').value;
+        this.dateFilter.endDate = document.getElementById('end-date').value;
+        this.dateFilter.startTime = document.getElementById('start-time').value;
+        this.dateFilter.endTime = document.getElementById('end-time').value;
+        this.updateDateRangeInfo();
+        this.loadData();
+    }
+    
+    updateDateRangeInfo() {
+        const start = this.dateFilter.startDate;
+        const end = this.dateFilter.endDate;
+        const startTime = this.dateFilter.startTime;
+        const endTime = this.dateFilter.endTime;
+        
+        let infoText = `Mostrando datos del: ${this.formatDate(start)} ${startTime}`;
+        if (start !== end) {
+            infoText += ` al ${this.formatDate(end)} ${endTime}`;
+        } else if (startTime !== '00:00' || endTime !== '23:59') {
+            infoText += ` al ${endTime}`;
+        } else {
+            infoText += ' (Día completo)';
+        }
+        
+        document.getElementById('date-range-info').textContent = infoText;
+        document.getElementById('export-info').textContent = 
+            `Descarga reportes del período: ${this.formatDate(start)} ${startTime}${start !== end ? ' al ' + this.formatDate(end) + ' ' + endTime : ''}`;
+    }
+    
+    formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+    
+    async loadData() {
+        try {
+            this.showLoadingStates();
+            
+            // Construir parámetros de consulta con fecha y hora
+            const params = new URLSearchParams({
+                start_date: this.dateFilter.startDate,
+                end_date: this.dateFilter.endDate
+            });
+            
+            // Agregar filtros de hora si no son el día completo
+            if (this.dateFilter.startTime !== '00:00' || this.dateFilter.endTime !== '23:59') {
+                params.append('start_time', this.dateFilter.startTime);
+                params.append('end_time', this.dateFilter.endTime);
+            }
+            
+            console.log('Cargando datos con filtros:', params.toString());
+            
+            // Usar las URLs con filtros de fecha y hora
+            const [sensorsResponse, predictionsResponse, metricsResponse] = await Promise.all([
+                fetch(`/api/datos_monitor?${params}`),
+                fetch(`/api/predictions?${params}`),
+                fetch('/api/estado_actual')
+            ]);
+            
+            if (!sensorsResponse.ok) {
+                throw new Error('Error cargando datos de sensores');
+            }
+            
+            const sensorsData = await sensorsResponse.json();
+            const predictionsData = await predictionsResponse.json();
+            const metricsData = metricsResponse.ok ? await metricsResponse.json() : {};
+
+            console.log('Datos cargados con filtros:', {
+                sensors: sensorsData,
+                predictions: predictionsData,
+                metrics: metricsData
+            });
+            
+            this.sensorsData = sensorsData.sensores || [];
+            this.predictionsData = predictionsData.predictions || [];
+            this.metricsData = metricsData;
+            
+            this.updateMetrics();
+            this.updateTables();
+            this.updateCharts();
+            this.updateSystemReport();
+            
+        } catch (error) {
+            console.error('Error cargando reportes:', error);
+            this.handleError(error);
+        } finally {
+            this.hideLoadingStates();
+        }
+    }
+    
+    updateMetrics() {
+        // Actualizar métricas principales
+        const totalSensores = this.sensorsData.length;
+        document.getElementById('total-sensores').textContent = totalSensores;
+        document.getElementById('sensors-count').textContent = totalSensores;
+        
+        const totalPredicciones = this.predictionsData.length;
+        document.getElementById('predictions-count').textContent = totalPredicciones;
+        document.getElementById('total-predicciones').textContent = totalPredicciones;
+        
+        // Calcular días con datos en el período
+        const uniqueDates = [...new Set(this.sensorsData.map(s => {
+            const date = new Date(s.timestamp);
+            return date.toISOString().split('T')[0];
+        }))].filter(Boolean);
+        document.getElementById('dias-activo').textContent = uniqueDates.length;
+        
+        // Plantas únicas monitoreadas
+        const uniquePlants = [...new Set(this.sensorsData.map(s => s.tipo_planta))].filter(Boolean);
+        document.getElementById('total-plantas').textContent = uniquePlants.length;
+    }
+    
+    updateTables() {
+        this.updateSensorsTable();
+        this.updatePredictionsTable();
+    }
+    
+    updateSensorsTable() {
+        const tbody = document.getElementById('sensors-tbody');
+        
+        if (this.sensorsData.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        No hay datos de sensores disponibles para el período seleccionado
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        let html = '';
+        this.sensorsData.slice(0, 8).forEach(sensor => {
+            const timestamp = sensor.timestamp ? new Date(sensor.timestamp).toLocaleString() : '--';
+            html += `
+                <tr>
+                    <td>
+                        <i class="fas fa-microchip me-2 text-primary"></i>
+                        ${sensor.sensor_id || 'N/A'}
+                    </td>
+                    <td>
+                        <span class="badge bg-danger">${sensor.temperatura || '--'}°C</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-info">${sensor.humedad || '--'}%</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-warning">${sensor.ph || '--'}</span>
+                    </td>
+                    <td>
+                        <small class="text-muted">${timestamp}</small>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tbody.innerHTML = html;
+    }
+    
+    updatePredictionsTable() {
+        const tbody = document.getElementById('predictions-tbody');
+        
+        if (this.predictionsData.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        No hay predicciones disponibles para el período seleccionado
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        let html = '';
+        this.predictionsData.slice(0, 8).forEach(pred => {
+            const date = pred.date ? new Date(pred.date).toLocaleString() : '--';
+            const confidencePercent = ((pred.confidence || 0) * 100).toFixed(1);
+            const confidenceClass = (pred.confidence || 0) > 0.8 ? 'bg-success' : 
+                                  (pred.confidence || 0) > 0.6 ? 'bg-warning' : 'bg-danger';
+            
+            html += `
+                <tr>
+                    <td>
+                        <i class="fas fa-seedling me-2" style="color: ${pred.plant_type === 'rabano' ? '#e91e63' : '#9c27b0'}"></i>
+                        ${pred.plant_type || 'Desconocido'}
+                    </td>
+                    <td>
+                        <strong>${pred.yield || 0}g</strong>
+                    </td>
+                    <td>
+                        <span class="badge ${confidenceClass}">${confidencePercent}%</span>
+                    </td>
+                    <td>
+                        <small class="text-muted">${date}</small>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tbody.innerHTML = html;
+    }
+    
+    updateCharts() {
+        this.createSensorsChart();
+        this.createYieldChart();
+    }
+    
+    createSensorsChart() {
+        const canvas = document.getElementById('sensors-chart');
+        const loadingElement = document.getElementById('sensors-chart-loading');
+        
+        // Ocultar spinner y mostrar canvas
+        loadingElement.style.display = 'none';
+        canvas.style.display = 'block';
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Destruir gráfico existente si hay uno
+        if (this.charts.sensors) {
+            this.charts.sensors.destroy();
+        }
+        
+        // Contar sensores por tipo
+        const sensorCounts = {};
+        this.sensorsData.forEach(sensor => {
+            const type = sensor.tipo_planta || 'desconocido';
+            sensorCounts[type] = (sensorCounts[type] || 0) + 1;
+        });
+        
+        console.log('Distribución de sensores:', sensorCounts);
+        
+        // Si no hay datos, mostrar mensaje
+        if (Object.keys(sensorCounts).length === 0) {
+            canvas.style.display = 'none';
+            loadingElement.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                    <p>No hay datos de sensores para mostrar</p>
+                </div>
+            `;
+            loadingElement.style.display = 'block';
+            return;
+        }
+        
+        const labels = Object.keys(sensorCounts);
+        const data = Object.values(sensorCounts);
+        const backgroundColors = ['#e91e63', '#9c27b0', '#2196f3', '#ff9800', '#4caf50', '#795548'];
+        
+        this.charts.sensors = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors.slice(0, labels.length),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    createYieldChart() {
+        const canvas = document.getElementById('yield-chart');
+        const loadingElement = document.getElementById('yield-chart-loading');
+        
+        // Ocultar spinner y mostrar canvas
+        loadingElement.style.display = 'none';
+        canvas.style.display = 'block';
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Destruir gráfico existente si hay uno
+        if (this.charts.yield) {
+            this.charts.yield.destroy();
+        }
+        
+        // Calcular rendimiento promedio por planta
+        const yieldByPlant = {};
+        this.predictionsData.forEach(pred => {
+            const plantType = pred.plant_type || 'desconocido';
+            if (!yieldByPlant[plantType]) {
+                yieldByPlant[plantType] = [];
+            }
+            yieldByPlant[plantType].push(pred.yield || 0);
+        });
+        
+        const averages = {};
+        Object.keys(yieldByPlant).forEach(plant => {
+            const yields = yieldByPlant[plant];
+            averages[plant] = yields.reduce((a, b) => a + b, 0) / yields.length;
+        });
+        
+        console.log('Rendimiento por planta:', averages);
+        
+        // Si no hay datos, mostrar mensaje
+        if (Object.keys(averages).length === 0) {
+            canvas.style.display = 'none';
+            loadingElement.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                    <p>No hay datos de predicciones para mostrar</p>
+                </div>
+            `;
+            loadingElement.style.display = 'block';
+            return;
+        }
+        
+        this.charts.yield = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(averages),
+                datasets: [{
+                    label: 'Rendimiento Promedio (g)',
+                    data: Object.values(averages),
+                    backgroundColor: ['#e91e63', '#9c27b0', '#2196f3'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Gramos'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+    
+    updateSystemReport() {
+        const container = document.getElementById('system-report');
+        
+        if (this.sensorsData.length === 0) {
+            container.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    No hay datos disponibles para el período seleccionado
+                </div>
+            `;
+            return;
+        }
+        
+        const avgTemp = this.sensorsData.reduce((sum, s) => sum + (s.temperatura || 0), 0) / this.sensorsData.length;
+        const avgHumidity = this.sensorsData.reduce((sum, s) => sum + (s.humedad || 0), 0) / this.sensorsData.length;
+        const avgYield = this.predictionsData.length > 0 ? 
+            this.predictionsData.reduce((sum, p) => sum + (p.yield || 0), 0) / this.predictionsData.length : 0;
+        const avgConfidence = this.predictionsData.length > 0 ? 
+            (this.predictionsData.reduce((sum, p) => sum + (p.confidence || 0), 0) / this.predictionsData.length) * 100 : 0;
+        
+        container.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Estado del Sistema - Período Seleccionado</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Sensores Activos
+                            <span class="badge bg-primary rounded-pill">${this.sensorsData.length}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Predicciones Generadas
+                            <span class="badge bg-info rounded-pill">${this.predictionsData.length}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Temperatura Promedio
+                            <span class="badge bg-danger rounded-pill">${avgTemp.toFixed(1)}°C</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Humedad Promedio
+                            <span class="badge bg-success rounded-pill">${avgHumidity.toFixed(1)}%</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Rendimiento del Sistema</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Rendimiento Promedio
+                            <span class="badge bg-warning rounded-pill">${avgYield.toFixed(1)}g</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Confianza Media
+                            <span class="badge bg-primary rounded-pill">${avgConfidence.toFixed(1)}%</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Período Analizado
+                            <span class="badge bg-secondary rounded-pill">${this.formatDate(this.dateFilter.startDate)} ${this.dateFilter.startTime}${this.dateFilter.startDate !== this.dateFilter.endDate ? ' - ' + this.formatDate(this.dateFilter.endDate) + ' ' + this.dateFilter.endTime : ''}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Estado
+                            <span class="badge bg-success rounded-pill">Operativo</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+    
+    showLoadingStates() {
+        document.querySelectorAll('.stat-value').forEach(el => {
+            el.classList.add('skeleton');
+        });
+    }
+    
+    hideLoadingStates() {
+        document.querySelectorAll('.stat-value').forEach(el => {
+            el.classList.remove('skeleton');
+        });
+    }
+    
+    handleError(error) {
+        const container = document.getElementById('system-report');
+        container.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Error cargando datos: ${error.message}
+            </div>
+        `;
+    }
+    
+    // Métodos para exportación
+    exportToPDF() {
+        try {
+            const doc = new jsPDF();
+            
+            // Título
+            doc.setFontSize(20);
+            doc.text('Reporte del Sistema Bio-Invernadero', 20, 30);
+            
+            // Fecha y período
+            doc.setFontSize(12);
+            doc.text(`Generado: ${new Date().toLocaleString()}`, 20, 45);
+            doc.text(`Período: ${this.formatDate(this.dateFilter.startDate)} ${this.dateFilter.startTime}${this.dateFilter.startDate !== this.dateFilter.endDate ? ' - ' + this.formatDate(this.dateFilter.endDate) + ' ' + this.dateFilter.endTime : ''}`, 20, 55);
+            
+            // Métricas principales
+            doc.setFontSize(16);
+            doc.text('Métricas Principales', 20, 75);
+            
+            doc.setFontSize(10);
+            let yPosition = 90;
+            doc.text(`• Sensores Activos: ${this.sensorsData.length}`, 20, yPosition);
+            yPosition += 10;
+            doc.text(`• Predicciones Generadas: ${this.predictionsData.length}`, 20, yPosition);
+            yPosition += 10;
+            doc.text(`• Plantas Monitoreadas: ${[...new Set(this.sensorsData.map(s => s.tipo_planta))].length}`, 20, yPosition);
+            yPosition += 10;
+            doc.text(`• Período de Datos: ${this.formatDate(this.dateFilter.startDate)} ${this.dateFilter.startTime}${this.dateFilter.startDate !== this.dateFilter.endDate ? ' - ' + this.formatDate(this.dateFilter.endDate) + ' ' + this.dateFilter.endTime : ''}`, 20, yPosition);
+            
+            // Tabla de sensores
+            yPosition += 20;
+            doc.setFontSize(16);
+            doc.text('Datos de Sensores', 20, yPosition);
+            
+            const sensorsTableData = this.sensorsData.slice(0, 15).map(sensor => [
+                sensor.sensor_id || 'N/A',
+                `${sensor.temperatura || '--'}°C`,
+                `${sensor.humedad || '--'}%`,
+                sensor.ph || '--',
+                new Date(sensor.timestamp).toLocaleDateString()
+            ]);
+            
+            doc.autoTable({
+                startY: yPosition + 10,
+                head: [['Sensor', 'Temp', 'Humedad', 'pH', 'Fecha']],
+                body: sensorsTableData,
+                theme: 'grid'
+            });
+            
+            // Tabla de predicciones
+            const finalY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(16);
+            doc.text('Predicciones de Rendimiento', 20, finalY);
+            
+            const predictionsTableData = this.predictionsData.slice(0, 10).map(pred => [
+                pred.plant_type || 'Desconocido',
+                `${pred.yield || 0}g`,
+                `${((pred.confidence || 0) * 100).toFixed(1)}%`,
+                new Date(pred.date).toLocaleDateString()
+            ]);
+            
+            doc.autoTable({
+                startY: finalY + 10,
+                head: [['Planta', 'Rendimiento', 'Confianza', 'Fecha']],
+                body: predictionsTableData,
+                theme: 'grid'
+            });
+            
+            // Guardar PDF
+            const fileName = `reporte-invernadero-${this.dateFilter.startDate}_${this.dateFilter.startTime.replace(':', '')}${this.dateFilter.startDate !== this.dateFilter.endDate ? '_al_' + this.dateFilter.endDate + '_' + this.dateFilter.endTime.replace(':', '') : ''}.pdf`;
+            doc.save(fileName);
+            
+        } catch (error) {
+            console.error('Error generando PDF:', error);
+            alert('Error al generar el PDF: ' + error.message);
+        }
+    }
+    
+    exportToCSV() {
+        try {
+            // Datos de sensores
+            let csvContent = "REPORTE BIO-INVERNADERO\n";
+            csvContent += `Período: ${this.formatDate(this.dateFilter.startDate)} ${this.dateFilter.startTime}${this.dateFilter.startDate !== this.dateFilter.endDate ? ' - ' + this.formatDate(this.dateFilter.endDate) + ' ' + this.dateFilter.endTime : ''}\n`;
+            csvContent += `Generado: ${new Date().toLocaleString()}\n\n`;
+            
+            csvContent += "SENSORES\n";
+            csvContent += "Sensor,Tipo Planta,Temperatura,Humedad,pH,Nutrientes,Luz,CO2,Fecha\n";
+            
+            this.sensorsData.forEach(sensor => {
+                csvContent += `"${sensor.sensor_id || 'N/A'}","${sensor.tipo_planta || 'N/A'}",${sensor.temperatura || '--'},${sensor.humedad || '--'},${sensor.ph || '--'},${sensor.nutrientes || '--'},${sensor.luminosidad || '--'},${sensor.co2 || '--'},"${sensor.timestamp}"\n`;
+            });
+            
+            csvContent += "\n\nPREDICCIONES DE RENDIMIENTO\n";
+            csvContent += "Planta,Rendimiento,Confianza,Fecha\n";
+            
+            this.predictionsData.forEach(pred => {
+                csvContent += `"${pred.plant_type || 'Desconocido'}",${pred.yield || 0},${pred.confidence || 0},"${pred.date}"\n`;
+            });
+            
+            // Crear y descargar archivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            const fileName = `reporte-invernadero-${this.dateFilter.startDate}_${this.dateFilter.startTime.replace(':', '')}${this.dateFilter.startDate !== this.dateFilter.endDate ? '_al_' + this.dateFilter.endDate + '_' + this.dateFilter.endTime.replace(':', '') : ''}.csv`;
+            link.setAttribute('download', fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+        } catch (error) {
+            console.error('Error generando CSV:', error);
+            alert('Error al generar el CSV: ' + error.message);
+        }
+    }
+}
+
+// Funciones globales para filtros de hora
+function setFullDay() {
+    document.getElementById('start-time').value = '00:00';
+    document.getElementById('end-time').value = '23:59';
+    if (window.reportsDashboard) {
+        window.reportsDashboard.applyDateFilter();
+    }
+}
+
+function setMorning() {
+    document.getElementById('start-time').value = '06:00';
+    document.getElementById('end-time').value = '12:00';
+    if (window.reportsDashboard) {
+        window.reportsDashboard.applyDateFilter();
+    }
+}
+
+function setAfternoon() {
+    document.getElementById('start-time').value = '12:00';
+    document.getElementById('end-time').value = '18:00';
+    if (window.reportsDashboard) {
+        window.reportsDashboard.applyDateFilter();
+    }
+}
+
+function setNight() {
+    document.getElementById('start-time').value = '18:00';
+    document.getElementById('end-time').value = '23:59';
+    if (window.reportsDashboard) {
+        window.reportsDashboard.applyDateFilter();
+    }
+}
+
+function clearFilters() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start-date').value = today;
+    document.getElementById('end-date').value = today;
+    document.getElementById('start-time').value = '00:00';
+    document.getElementById('end-time').value = '23:59';
+    
+    // Actualizar botones activos
+    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector('.quick-filter-btn').classList.add('active');
+    
+    if (window.reportsDashboard) {
+        window.reportsDashboard.applyDateFilter();
+    }
+}
+
+function refreshReports() {
+    if (window.reportsDashboard) {
+        window.reportsDashboard.loadData();
+        
+        const button = document.getElementById('refresh-btn');
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Actualizando...';
+        button.disabled = true;
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.disabled = false;
+        }, 2000);
+    }
+}
+
+function exportToPDF() {
+    if (window.reportsDashboard) {
+        window.reportsDashboard.exportToPDF();
+    }
+}
+
+function exportToCSV() {
+    if (window.reportsDashboard) {
+        window.reportsDashboard.exportToCSV();
+    }
+}
+
+function setDateFilter(range) {
+    if (window.reportsDashboard) {
+        window.reportsDashboard.setDateFilter(range);
+    }
+}
+
+function applyDateFilter() {
+    if (window.reportsDashboard) {
+        window.reportsDashboard.applyDateFilter();
+    }
+}
+
+function showExportOptions() {
+    // Mostrar modal o menú de exportación (puedes implementar esto)
+    alert('Selecciona el formato de exportación desde los botones correspondientes');
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    window.reportsDashboard = new ReportsDashboard();
+});
+</script>
+{% endblock %}

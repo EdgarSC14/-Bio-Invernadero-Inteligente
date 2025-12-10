@@ -1,0 +1,420 @@
+/* dashboard/static/css/style.css */
+:root {
+    /* Colores principales - Verde con Azul (tecnología agrícola moderna) */
+    --primary-green: #81C784;
+    --dark-green: #388E3C;
+    --accent-blue: #4FC3F7;
+    --light-blue: #B3E5FC;
+    --neutral-light: #ECEFF1;
+    --neutral-dark: #37474F;
+    --white: #FFFFFF;
+    
+    /* Colores adicionales */
+    --accent-orange: #FFB74D;
+    --accent-purple: #BA68C8;
+    --success: #66BB6A;
+    --warning: #FFA726;
+    --danger: #EF5350;
+    --info: #42A5F5;
+    
+    /* Modo claro (default) */
+    --bg-primary: var(--white);
+    --bg-secondary: var(--neutral-light);
+    --text-primary: var(--neutral-dark);
+    --text-secondary: #546E7A;
+    --card-bg: var(--white);
+    --border-color: #E0E0E0;
+    --shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] {
+    --bg-primary: #1E1E1E;
+    --bg-secondary: #2D2D2D;
+    --text-primary: #E0E0E0;
+    --text-secondary: #B0B0B0;
+    --card-bg: #2D2D2D;
+    --border-color: #404040;
+    --shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Estilos base */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.bg-gradient-nav {
+    background: linear-gradient(135deg, var(--primary-green), var(--dark-green)) !important;
+}
+
+/* Componentes reutilizables */
+.chart-container {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 0 0 rgba(129, 199, 132, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(129, 199, 132, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(129, 199, 132, 0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+.pulse-glow {
+    animation: pulse-glow 2s infinite;
+}
+
+.float-animation {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Tarjetas con hover mejorado */
+.hover-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.hover-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-color: var(--primary-green);
+}
+
+/* Badges personalizados */
+.badge-critical {
+    background-color: var(--danger);
+    animation: pulse-badge 2s infinite;
+    color: white;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, var(--success), var(--dark-green));
+    color: white;
+    font-weight: 600;
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, var(--warning), #F57C00);
+    color: white;
+    font-weight: 600;
+}
+
+.badge-info {
+    background: linear-gradient(135deg, var(--info), #1565C0);
+    color: white;
+    font-weight: 600;
+}
+
+@keyframes pulse-badge {
+    0% { box-shadow: 0 0 0 0 rgba(239, 83, 80, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 83, 80, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 83, 80, 0); }
+}
+
+/* Botón de modo oscuro */
+.theme-toggle {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 50px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.theme-toggle:hover {
+    border-color: var(--primary-green);
+    transform: scale(1.05);
+}
+
+/* Elementos decorativos */
+.decorative-dots {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(var(--primary-green) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+.gradient-border {
+    position: relative;
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 2px;
+}
+
+.gradient-border::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--primary-green), var(--accent-blue), var(--accent-purple));
+    border-radius: 14px;
+    z-index: -1;
+    opacity: 0.7;
+}
+
+/* Mejoras para tablas */
+.table-custom {
+    background: var(--card-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.table-custom th {
+    background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.table-custom td {
+    border-color: var(--border-color);
+    padding: 1rem;
+}
+
+/* Progress bars personalizadas */
+.progress-custom {
+    height: 10px;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    overflow: hidden;
+}
+
+.progress-bar-custom {
+    background: linear-gradient(90deg, var(--primary-green), var(--accent-blue));
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+}
+
+/* Cards de estadísticas */
+.stat-card {
+    background: linear-gradient(135deg, var(--card-bg), var(--bg-secondary));
+    border-radius: 15px;
+    padding: 1.5rem;
+    border-left: 4px solid var(--primary-green);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateX(5px);
+    border-left-color: var(--accent-blue);
+}
+
+/* Loading skeletons */
+.skeleton {
+    background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--border-color) 50%, var(--bg-secondary) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chart-container {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hover-card:hover {
+        transform: none;
+    }
+}
+
+/* Utilidades */
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-green), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.border-gradient {
+    border: 2px solid;
+    border-image: linear-gradient(45deg, var(--primary-green), var(--accent-blue)) 1;
+}
+
+.shadow-custom {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] .shadow-custom {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Mejoras adicionales para la base actualizada */
+
+/* Breadcrumb mejorado */
+.breadcrumb {
+    background: transparent;
+    padding: 0.5rem 0;
+    margin-bottom: 0;
+}
+
+.breadcrumb-item.active {
+    color: var(--text-secondary);
+}
+
+/* Avatar de usuario */
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.1);
+}
+
+/* Notificaciones mejoradas */
+.notification-bell {
+    transition: all 0.3s ease;
+}
+
+.notification-bell:hover {
+    transform: scale(1.1);
+}
+
+.notification-dropdown {
+    min-width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    border-left-color: var(--primary-green);
+    background-color: var(--bg-secondary);
+}
+
+.notification-toast {
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+/* Indicador de estado del sistema */
+.system-status-badge {
+    transition: all 0.3s ease;
+}
+
+.system-status-badge:hover {
+    transform: scale(1.05);
+}
+
+.pulse-dot {
+    animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Health indicator circular */
+.health-indicator .progress {
+    border-radius: 50%;
+    background: var(--bg-secondary);
+}
+
+.health-indicator .progress-bar {
+    border-radius: 50%;
+    background: conic-gradient(var(--success) 0% 98%, var(--bg-secondary) 98% 100%);
+}
+
+/* Enlaces del footer */
+.footer-links a {
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    color: var(--primary-green) !important;
+    transform: translateX(2px);
+}
+
+/* Mejoras responsive */
+@media (max-width: 768px) {
+    .notification-dropdown {
+        min-width: 280px;
+    }
+    
+    .footer-links {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .system-health {
+        margin: 1rem 0;
+    }
+}
+
+/* Scrollbar para dropdown de notificaciones */
+.notification-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-dropdown::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 3px;
+}
+
+/* Efectos de transición suave */
+.navbar,
+.footer,
+.breadcrumb {
+    transition: all 0.3s ease;
+}

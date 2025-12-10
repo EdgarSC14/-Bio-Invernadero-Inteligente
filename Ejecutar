@@ -1,0 +1,18 @@
+ERROR: Ejecuta como Administrador (Click derecho - como administrador
+
+
+categoria (categoria_id)
+fecha de entrega ideal (fecha_limite)
+enfoque (que es lo mismo que etapa_id de la BD)
+objetivo (descripcion en la BD)
+paquete campana ( paquete_ID dentro de la BD)
+recompensa (precio_nivel dentro de la BD)
+
+
+
+
+
+cd /home/edgar/Escritorio/invernadero_inteligente
+source .venv/bin/activate
+python3 dashboard/app_simulador.py
+

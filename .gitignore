@@ -1,0 +1,52 @@
+# Entorno virtual
+.venv/
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Modelos entrenados (pueden ser grandes)
+bi/models/*.pkl
+*.pkl
+*.joblib
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Base de datos local
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Archivos temporales
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración local
+config_local.py
+.env
+.env.local
+
+# Documentos PDF grandes (opcional - descomentar si no quieres subir PDFs)
+# *.pdf
+
+# Archivos de sistema
+kamindo/
+
