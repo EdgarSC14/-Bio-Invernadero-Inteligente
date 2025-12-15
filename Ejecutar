@@ -10,9 +10,15 @@ recompensa (precio_nivel dentro de la BD)
 
 
 
-
-
 cd /home/edgar/Escritorio/invernadero_inteligente
 source .venv/bin/activate
-python3 dashboard/app_simulador.py
+python3 dashboard/app_simulador.p
 
+sk-61107c8f87c747da8c07adfafb87dda7
+
+
+
+implementa un asistente de IA con la siguiente api key:
+sk-61107c8f87c747da8c07adfafb87dda7
+quiero que el asistente de cualquier informacion que se muestre en la pagina 
+ten en cuenta que el archivo que ejecuto es @app_simulador.py 

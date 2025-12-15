@@ -1142,6 +1142,18 @@ class MonitorDashboard {
     updateAlertContainer(criticalSensors, warningSensors) {
         const container = document.getElementById('alertas-container');
         
+        // Si no hay sensores, mostrar aviso informativo
+        if (!this.sensorsData || this.sensorsData.length === 0) {
+            container.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>No hay sensores activos</strong>
+                </div>
+            `;
+            return;
+        }
+        
+        // Si hay sensores y ninguno con alerta
         if (criticalSensors.length === 0 && warningSensors.length === 0) {
             container.innerHTML = `
                 <div class="alert alert-success">

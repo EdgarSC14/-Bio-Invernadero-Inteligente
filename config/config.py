@@ -31,14 +31,7 @@ class Config:
     UMBRAL_TEMP_BAJA = 16.0
     UMBRAL_HUMEDAD_ALTA = 85.0
     UMBRAL_HUMEDAD_BAJA = 45.0
-
-# config/requirements.txt
-psycopg2-binary==2.9.6
-pandas==1.5.3
-numpy==1.24.3
-scipy==1.10.1
-kafka-python==2.0.2
-flask==2.3.3
-plotly==5.15.0
-scikit-learn==1.3.0
-python-dotenv==1.0.0
+    
+    # API de IA
+    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'sk-fe605ed34fab4c8bae5943ad76b73e79')
+    OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions'

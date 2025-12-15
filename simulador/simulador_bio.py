@@ -24,12 +24,12 @@ def conectar_y_configurar():
         conn.autocommit = True
         cursor = conn.cursor()
         
-        cursor.execute("SELECT 1 FROM pg_database WHERE datname='greenhouse_monitoring'")
+        cursor.execute("SELECT 1 FROM pg_database WHERE datname='invernadero_bio'")
         if not cursor.fetchone():
-            cursor.execute("CREATE DATABASE greenhouse_monitoring")
-            print("✅ Base de datos 'greenhouse_monitoring' creada")
+            cursor.execute("CREATE DATABASE invernadero_bio")
+            print("✅ Base de datos 'invernadero_bio' creada")
         else:
-            print("✅ Base de datos ya existe")
+            print("✅ Base de datos 'invernadero_bio' ya existe")
         
         cursor.close()
         conn.close()
@@ -37,12 +37,12 @@ def conectar_y_configurar():
         # Paso 3: Conectar a la base de datos específica
         conn = psycopg2.connect(
             host="localhost",
-            database="greenhouse_monitoring",
+            database="invernadero_bio",
             user="postgres", 
             password="1234",
             port="5432"
         )
-        print("✅ Conectado a greenhouse_monitoring")
+        print("✅ Conectado a invernadero_bio")
         
         return conn
         

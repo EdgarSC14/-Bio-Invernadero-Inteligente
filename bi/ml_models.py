@@ -183,12 +183,32 @@ class InvernaderoMLModels:
         prediction = model.predict(X_scaled)[0]
         
         # Calcular confianza basada en la varianza del modelo
-        if hasattr(model, 'estimators_'):
-            # Para Random Forest, calcular std de predicciones de árboles
-            tree_predictions = np.array([tree.predict(X_scaled)[0] for tree in model.estimators_])
-            std = np.std(tree_predictions)
-            confidence = max(0.5, min(0.95, 1.0 - (std / prediction) if prediction > 0 else 0.7))
-        else:
+        try:
+            if hasattr(model, 'estimators_') and model.estimators_ is not None:
+                # Para Random Forest, calcular std de predicciones de árboles
+                # Verificar que los estimadores tengan el método predict
+                tree_predictions = []
+                for tree in model.estimators_:
+                    # Verificar que el árbol tenga el método predict
+                    if hasattr(tree, 'predict') and callable(getattr(tree, 'predict')):
+                        try:
+                            tree_pred = tree.predict(X_scaled)[0]
+                            tree_predictions.append(tree_pred)
+                        except:
+                            continue
+                
+                if len(tree_predictions) > 0:
+                    tree_predictions = np.array(tree_predictions)
+                    std = np.std(tree_predictions)
+                    confidence = max(0.5, min(0.95, 1.0 - (std / prediction) if prediction > 0 else 0.7))
+                else:
+                    # Si no se pudieron obtener predicciones de árboles, usar confianza por defecto
+                    confidence = 0.85
+            else:
+                confidence = 0.85
+        except Exception as e:
+            # Si hay cualquier error al calcular confianza, usar valor por defecto
+            print(f"⚠️ Error calculando confianza: {e}, usando valor por defecto")
             confidence = 0.85
         
         return float(prediction), float(confidence)

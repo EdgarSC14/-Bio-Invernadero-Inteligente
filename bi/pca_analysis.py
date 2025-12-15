@@ -93,15 +93,15 @@ class PCAAnalyzer:
         components = self.pca_model.components_
         feature_names = df.columns.tolist()
         
-        # Crear información detallada
+        # Crear información detallada (asegurar tipos nativos de Python para JSON)
         self.components_info = {
-            'n_components': n_components,
-            'explained_variance_ratio': explained_variance.tolist(),
-            'cumulative_variance': cumulative_variance.tolist(),
-            'components': components.tolist(),
+            'n_components': int(n_components),  # Convertir numpy int64 a int nativo
+            'explained_variance_ratio': [float(x) for x in explained_variance.tolist()],
+            'cumulative_variance': [float(x) for x in cumulative_variance.tolist()],
+            'components': [[float(y) for y in x] for x in components.tolist()],
             'feature_names': feature_names,
             'total_variance_explained': float(cumulative_variance[-1]),
-            'n_features_original': len(feature_names),
+            'n_features_original': int(len(feature_names)),  # Asegurar int nativo
             'reduction_ratio': f"{len(feature_names)} → {n_components} ({((1 - n_components/len(feature_names)) * 100):.1f}% reducción)"
         }
         

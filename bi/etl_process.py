@@ -109,6 +109,11 @@ class ETLProcessor:
                 sensor_id_dim = self.get_or_create_sensor_id(sensor_id)
                 ubicacion_id = self.get_or_create_ubicacion_id(sensor_id)
                 
+                # Solo agregar si todos los IDs son válidos
+                if tiempo_id is None or planta_id is None or sensor_id_dim is None or ubicacion_id is None:
+                    logger.warning(f"⚠️ Saltando medición por IDs inválidos: tiempo_id={tiempo_id}, planta_id={planta_id}, sensor_id={sensor_id_dim}, ubicacion_id={ubicacion_id}")
+                    continue
+                
                 transformed['mediciones'].append({
                     'tiempo_id': tiempo_id,
                     'planta_id': planta_id,
@@ -136,6 +141,11 @@ class ETLProcessor:
                 tiempo_id = self.get_or_create_tiempo_id(pred_date)
                 planta_id = self.get_or_create_planta_id(plant_id, plant_type, status)
                 
+                # Solo agregar si todos los IDs son válidos
+                if tiempo_id is None or planta_id is None:
+                    logger.warning(f"⚠️ Saltando predicción por IDs inválidos: tiempo_id={tiempo_id}, planta_id={planta_id}")
+                    continue
+                
                 # Calcular promedios del período
                 promedios = self.calcular_promedios_periodo(plant_id, pred_date)
                 
@@ -159,6 +169,13 @@ class ETLProcessor:
             
         except Exception as e:
             logger.error(f"❌ Error en transformación: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            # Hacer rollback de la transacción si hay error
+            try:
+                self.conn.rollback()
+            except:
+                pass
             return None
         finally:
             cursor.close()
@@ -253,6 +270,7 @@ class ETLProcessor:
         minuto = timestamp.minute if hasattr(timestamp, 'minute') else 0
         
         try:
+            # Primero intentar buscar si ya existe con fecha, hora y minuto exactos
             cursor.execute("""
                 SELECT tiempo_id FROM dim_tiempo
                 WHERE fecha = %s AND hora = %s AND minuto = %s
@@ -262,26 +280,102 @@ class ETLProcessor:
             if result:
                 return result[0]
             
-            # Crear entrada
+            # Si no existe, buscar solo por fecha (debido a la restricción dim_tiempo_fecha_key)
+            # que solo permite una entrada por fecha
             cursor.execute("""
-                INSERT INTO dim_tiempo (
-                    fecha, año, trimestre, mes, semana, dia_semana,
-                    nombre_dia, es_fin_semana, hora, minuto, timestamp_completo
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                RETURNING tiempo_id
-            """, (
-                fecha,
-                fecha.year,
-                (fecha.month - 1) // 3 + 1,
-                fecha.month,
-                fecha.isocalendar()[1],
-                fecha.weekday(),
-                fecha.strftime('%A'),
-                fecha.weekday() >= 5,
-                hora, minuto, timestamp
-            ))
+                SELECT tiempo_id FROM dim_tiempo
+                WHERE fecha = %s
+                ORDER BY hora DESC, minuto DESC
+                LIMIT 1
+            """, (fecha,))
             
-            return cursor.fetchone()[0]
+            result = cursor.fetchone()
+            if result:
+                # Ya existe una entrada para esta fecha, usar esa
+                return result[0]
+            
+            # Si no existe ninguna entrada para esta fecha, intentar insertar
+            # Nota: La restricción dim_tiempo_fecha_key solo permite una entrada por fecha
+            # así que si ya existe una, usamos esa. Si no existe, creamos una nueva.
+            try:
+                cursor.execute("""
+                    INSERT INTO dim_tiempo (
+                        fecha, año, trimestre, mes, semana, dia_semana,
+                        nombre_dia, es_fin_semana, hora, minuto, timestamp_completo
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (fecha) DO UPDATE SET
+                        hora = EXCLUDED.hora,
+                        minuto = EXCLUDED.minuto,
+                        timestamp_completo = EXCLUDED.timestamp_completo
+                    RETURNING tiempo_id
+                """, (
+                    fecha,
+                    fecha.year,
+                    (fecha.month - 1) // 3 + 1,
+                    fecha.month,
+                    fecha.isocalendar()[1],
+                    fecha.weekday(),
+                    fecha.strftime('%A'),
+                    fecha.weekday() >= 5,
+                    hora, minuto, timestamp
+                ))
+                
+                result = cursor.fetchone()
+                if result:
+                    return result[0]
+                
+                # Si no retornó resultado, buscar de nuevo
+                cursor.execute("""
+                    SELECT tiempo_id FROM dim_tiempo
+                    WHERE fecha = %s
+                    LIMIT 1
+                """, (fecha,))
+                
+                result = cursor.fetchone()
+                if result:
+                    return result[0]
+                    
+            except Exception as e:
+                # Si falla, hacer rollback y buscar la entrada existente
+                logger.warning(f"⚠️ Conflicto al insertar tiempo, buscando existente: {e}")
+                try:
+                    self.conn.rollback()
+                except:
+                    pass
+                
+                # Buscar por fecha
+                cursor.execute("""
+                    SELECT tiempo_id FROM dim_tiempo
+                    WHERE fecha = %s
+                    LIMIT 1
+                """, (fecha,))
+                
+                result = cursor.fetchone()
+                if result:
+                    return result[0]
+            
+            # Si todo falla, retornar None
+            logger.warning(f"⚠️ No se pudo obtener o crear tiempo_id para {fecha} {hora}:{minuto}")
+            return None
+        except Exception as e:
+            logger.error(f"❌ Error en get_or_create_tiempo_id: {e}")
+            try:
+                self.conn.rollback()
+            except:
+                pass
+            # Último intento: buscar solo por fecha
+            try:
+                cursor.execute("""
+                    SELECT tiempo_id FROM dim_tiempo
+                    WHERE fecha = %s
+                    LIMIT 1
+                """, (fecha,))
+                result = cursor.fetchone()
+                if result:
+                    return result[0]
+            except:
+                pass
+            return None
         finally:
             cursor.close()
     

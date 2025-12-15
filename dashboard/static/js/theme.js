@@ -50,7 +50,9 @@ class ThemeManager {
     }
 
     applyTheme(theme) {
+        // Aplicar tema a nivel de documento y compatibilidad con Bootstrap
         document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-bs-theme', theme);
         
         // Actualizar meta theme-color para navegadores móviles
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');

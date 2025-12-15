@@ -46,7 +46,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link hover-underline" href="{{ url_for('predicciones') }}">
-                            <i class="fas fa-crystal-ball me-1"></i>Predicciones IA
+                            <i class="fas fa-brain me-1"></i>Predicciones IA
                         </a>
                     </li>
                     <li class="nav-item">
@@ -274,6 +274,10 @@
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
+        // Historial de notificaciones para la campana (persistente entre páginas)
+        let notificationHistory = [];
+        const MAX_NOTIFICATIONS = 50;
+
         // Sistema de notificaciones mejorado
         function showSystemNotification(message, type = 'info', duration = 5000) {
             const notification = document.createElement('div');
@@ -298,6 +302,7 @@
             `;
             
             document.body.appendChild(notification);
+            addNotificationToCenter(message, type);
             
             setTimeout(() => {
                 if (notification.parentNode) {
@@ -326,6 +331,134 @@
             return icons[type] || icons['info'];
         }
 
+        function addNotificationToCenter(message, type) {
+            notificationHistory.unshift({
+                message,
+                type,
+                timestamp: new Date()
+            });
+
+            if (notificationHistory.length > MAX_NOTIFICATIONS) {
+                notificationHistory.pop();
+            }
+
+            persistNotificationHistory();
+            updateNotificationUI();
+        }
+
+        function updateNotificationUI() {
+            const list = document.getElementById('notification-list');
+            const countEl = document.getElementById('notification-count');
+            const badge = document.getElementById('alert-badge');
+
+            if (!list) return;
+
+            list.innerHTML = '';
+
+            if (notificationHistory.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.className = 'dropdown-item text-muted small';
+                emptyItem.textContent = 'Sin notificaciones';
+                list.appendChild(emptyItem);
+            } else {
+                notificationHistory.forEach(notification => {
+                    const item = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.className = 'dropdown-item notification-item';
+                    link.href = '#';
+
+                    const content = document.createElement('div');
+                    content.className = 'd-flex';
+
+                    const icon = document.createElement('i');
+                    icon.className = `${getAlertIcon(notification.type)} me-2 mt-1`;
+
+                    const textWrapper = document.createElement('div');
+                    const title = document.createElement('small');
+                    title.className = 'fw-bold';
+                    title.textContent = notification.message;
+
+                    const time = document.createElement('p');
+                    time.className = 'mb-0 small text-muted';
+                    time.textContent = formatTimeAgo(notification.timestamp);
+
+                    textWrapper.appendChild(title);
+                    textWrapper.appendChild(time);
+
+                    content.appendChild(icon);
+                    content.appendChild(textWrapper);
+                    link.appendChild(content);
+                    item.appendChild(link);
+                    list.appendChild(item);
+                });
+            }
+
+            if (countEl) {
+                const count = notificationHistory.length;
+                countEl.textContent = count ? `${count} nuevas` : 'Sin nuevas';
+            }
+
+            if (badge) {
+                const count = notificationHistory.length;
+                badge.textContent = count;
+                badge.classList.toggle('d-none', count === 0);
+            }
+        }
+
+        function formatTimeAgo(date) {
+            if (!(date instanceof Date)) {
+                date = new Date(date);
+            }
+            const diffSeconds = Math.floor((Date.now() - date.getTime()) / 1000);
+            if (diffSeconds < 60) return 'Hace unos segundos';
+            if (diffSeconds < 3600) return `Hace ${Math.floor(diffSeconds / 60)} min`;
+            if (diffSeconds < 86400) return `Hace ${Math.floor(diffSeconds / 3600)} h`;
+            return date.toLocaleDateString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function persistNotificationHistory() {
+            try {
+                const serializable = notificationHistory.map(n => ({
+                    ...n,
+                    timestamp: n.timestamp instanceof Date ? n.timestamp.toISOString() : n.timestamp
+                }));
+                localStorage.setItem('notificationHistory', JSON.stringify(serializable));
+            } catch (err) {
+                console.warn('No se pudo guardar el historial de notificaciones', err);
+            }
+        }
+
+        function loadNotificationHistory() {
+            try {
+                const stored = localStorage.getItem('notificationHistory');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    notificationHistory = parsed.map(n => ({
+                        ...n,
+                        timestamp: new Date(n.timestamp)
+                    }));
+                } else {
+                    // Semillas iniciales solo si no hay historial previo
+                    notificationHistory = [
+                        {
+                            message: 'Sistema estable',
+                            type: 'success',
+                            timestamp: new Date(Date.now() - 2 * 60 * 1000)
+                        },
+                        {
+                            message: 'Condiciones óptimas en los sensores',
+                            type: 'info',
+                            timestamp: new Date(Date.now() - 15 * 60 * 1000)
+                        }
+                    ];
+                    persistNotificationHistory();
+                }
+            } catch (err) {
+                console.warn('No se pudo cargar el historial de notificaciones', err);
+                notificationHistory = [];
+            }
+        }
+
         // Simular actualización de estado del sistema
         setInterval(() => {
             const statusElement = document.getElementById('system-status');
@@ -345,6 +478,14 @@
                     link.classList.add('active');
                 }
             });
+            
+            loadNotificationHistory();
+            updateNotificationUI();
+
+            const notificationBell = document.querySelector('.notification-bell');
+            if (notificationBell) {
+                notificationBell.addEventListener('show.bs.dropdown', updateNotificationUI);
+            }
         });
 
         // Simular notificaciones del sistema

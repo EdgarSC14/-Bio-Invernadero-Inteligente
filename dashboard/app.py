@@ -1,4 +1,10 @@
 # dashboard/app.py
+import sys
+import os
+
+# Agregar el directorio raíz del proyecto al path de Python
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from flask import Flask, jsonify, render_template, request, send_file
 import psycopg2
 from datetime import datetime, timedelta
@@ -9,11 +15,12 @@ import threading
 import time
 import json
 import requests
+from config.config import Config
 
 app = Flask(__name__)
 
 def get_db_connection():
-    """Conectar a la base de datos greenhouse_monitoring"""
+    """Conectar a la base de datos invernadero_bio"""
     try:
         conn = psycopg2.connect(
             host="localhost",
@@ -436,6 +443,9 @@ def api_datos_monitor():
         elif start_date:
             where_conditions.append("timestamp >= %s")
             params.append(start_date)
+        else:
+            # Sin filtros: solo lecturas de los últimos 15 segundos
+            where_conditions.append("timestamp >= NOW() - INTERVAL '15 seconds'")
             
         if end_date and end_time:
             end_datetime = f"{end_date} {end_time}"
@@ -453,7 +463,13 @@ def api_datos_monitor():
         cursor.execute(query, params)
         
         sensores = []
+        now_ts = datetime.now()
         for row in cursor.fetchall():
+            ts = row[7]
+            # Saltar registros sin timestamp o más antiguos que 15 segundos
+            if not ts or (now_ts - ts).total_seconds() > 15:
+                continue
+            
             if 'rabano' in row[0].lower():
                 tipo_planta = 'rabano'
             elif 'cilantro' in row[0].lower():
@@ -471,7 +487,7 @@ def api_datos_monitor():
                 'co2': float(row[6]) if row[6] is not None else 0,
                 'conductividad': float(row[3]) * 2 if row[3] is not None else 0,
                 'tipo_planta': tipo_planta,
-                'timestamp': row[7].isoformat() if row[7] else datetime.now().isoformat()
+                'timestamp': ts.isoformat()
             })
         
         return jsonify({
@@ -695,11 +711,17 @@ def api_estado_actual():
                    sensor_id, temperature, humidity, nutrient_level, ph_level, 
                    light_intensity, co2_level, timestamp
             FROM sensor_data 
+            WHERE timestamp >= NOW() - INTERVAL '15 seconds'
             ORDER BY sensor_id, timestamp DESC
         """)
         
         sensores = []
+        now_ts = datetime.now()
         for row in cursor.fetchall():
+            ts = row[7]
+            # Saltar sensores sin timestamp o muy antiguos (>15s)
+            if not ts or (now_ts - ts).total_seconds() > 15:
+                continue
             tipo_planta = 'rabano' if 'rabano' in row[0].lower() else 'cilantro'
             sensores.append({
                 'sensor_id': row[0],
@@ -711,7 +733,7 @@ def api_estado_actual():
                 'co2': float(row[6]) if row[6] is not None else 0,
                 'conductividad': float(row[3]) * 2 if row[3] is not None else 0,
                 'tipo_planta': tipo_planta,
-                'timestamp': row[7].isoformat() if row[7] else ''
+                'timestamp': ts.isoformat() if ts else ''
             })
         
         cursor.execute("""
@@ -939,6 +961,102 @@ def api_reportes_sensores():
     finally:
         cursor.close()
         conn.close()
+
+@app.route('/api/assistant/chat', methods=['POST'])
+def api_assistant_chat():
+    """API para el asistente de IA que puede responder sobre el contenido de la página"""
+    try:
+        data = request.get_json()
+        user_message = data.get('message', '')
+        page_content = data.get('page_content', '')
+        current_url = data.get('current_url', '')
+        
+        if not user_message:
+            return jsonify({'error': 'Mensaje requerido'}), 400
+        
+        # Construir el contexto con información de la página
+        system_prompt = """Eres un asistente de IA especializado en el sistema de Bio-Invernadero Inteligente. 
+Tu función es ayudar a los usuarios a entender cualquier información que se muestre en la página del dashboard.
+
+El sistema monitorea cultivos de rábanos y cilantro, con sensores que miden:
+- Temperatura (óptima: 18-26°C)
+- Humedad (óptima: 50-80%)
+- pH (óptimo: 6.0-7.0)
+- Niveles de nutrientes
+- Intensidad de luz
+- Niveles de CO2
+
+Puedes responder preguntas sobre:
+- Datos de sensores y su significado
+- Predicciones de rendimiento
+- Interpretación de gráficos y métricas
+- Recomendaciones para optimizar el cultivo
+- Cualquier información visible en la página actual
+
+Responde de manera clara, concisa y en español. Si no tienes suficiente información, pide más detalles o indica que necesitas ver datos específicos."""
+        
+        # Preparar el mensaje con contexto de la página
+        context_message = f"""El usuario está viendo la página: {current_url}
+
+Contenido visible en la página:
+{page_content[:2000]}  # Limitar el contenido para no exceder límites
+
+Pregunta del usuario: {user_message}"""
+        
+        # Llamar a la API de OpenAI
+        headers = {
+            'Authorization': f'Bearer {Config.OPENAI_API_KEY}',
+            'Content-Type': 'application/json'
+        }
+        
+        payload = {
+            'model': 'gpt-3.5-turbo',
+            'messages': [
+                {'role': 'system', 'content': system_prompt},
+                {'role': 'user', 'content': context_message}
+            ],
+            'temperature': 0.7,
+            'max_tokens': 500
+        }
+        
+        response = requests.post(
+            Config.OPENAI_API_URL,
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            assistant_message = result['choices'][0]['message']['content']
+            
+            return jsonify({
+                'status': 'success',
+                'message': assistant_message,
+                'timestamp': datetime.now().isoformat()
+            })
+        else:
+            error_msg = f"Error en API de OpenAI: {response.status_code}"
+            if response.text:
+                try:
+                    error_data = response.json()
+                    error_msg = error_data.get('error', {}).get('message', error_msg)
+                except:
+                    error_msg = response.text[:200]
+            
+            return jsonify({
+                'status': 'error',
+                'message': f'No pude procesar tu pregunta. {error_msg}',
+                'timestamp': datetime.now().isoformat()
+            }), 500
+            
+    except Exception as e:
+        print(f"Error en api_assistant_chat: {e}")
+        return jsonify({
+            'status': 'error',
+            'message': f'Error al procesar la solicitud: {str(e)}',
+            'timestamp': datetime.now().isoformat()
+        }), 500
 
 @app.route('/api/reportes/predicciones')
 def api_reportes_predicciones():

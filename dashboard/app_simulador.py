@@ -34,7 +34,7 @@ simulador_thread = None
 ultima_prediccion = None
 
 def get_db_connection():
-    """Conectar a la base de datos greenhouse_monitoring"""
+    """Conectar a la base de datos invernadero_bio"""
     try:
         conn = psycopg2.connect(
             host="localhost",
@@ -350,12 +350,9 @@ def iniciar_simulador():
         print("📦 Inicializando Data Warehouse...")
         conn = get_db_connection()
         if conn:
-            # Ejecutar esquema DW
-            cursor = conn.cursor()
-            with open(os.path.join(os.path.dirname(__file__), '..', 'database', 'dw_schema.sql'), 'r') as f:
-                cursor.execute(f.read())
-            conn.commit()
-            cursor.close()
+            # El esquema DW (dim_* y fact_*) ya está incluido en invernadero_bio.sql
+            # No es necesario ejecutar un archivo dw_schema.sql separado
+            # Las tablas se crean automáticamente cuando se importa invernadero_bio.sql
             
             # Inicializar módulos BI
             ml_models = InvernaderoMLModels(conn)
