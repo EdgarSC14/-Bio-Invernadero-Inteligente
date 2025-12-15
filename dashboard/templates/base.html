@@ -488,35 +488,10 @@
             }
         });
 
-        // Simular notificaciones del sistema
+        // Sin notificaciones simuladas para evitar alertas ficticias
         function simulateSystemNotifications() {
-            const notifications = [
-                {
-                    message: '🌱 Crecimiento óptimo detectado en sector A',
-                    type: 'success',
-                    delay: 10000
-                },
-                {
-                    message: '⚠️ Temperatura acercándose a límite superior',
-                    type: 'warning', 
-                    delay: 30000
-                },
-                {
-                    message: '📊 Nuevos datos de predicción disponibles',
-                    type: 'info',
-                    delay: 45000
-                }
-            ];
-
-            notifications.forEach(notification => {
-                setTimeout(() => {
-                    showSystemNotification(notification.message, notification.type);
-                }, notification.delay);
-            });
+            // Intencionalmente vacío
         }
-
-        // Iniciar simulaciones después de 5 segundos
-        setTimeout(simulateSystemNotifications, 5000);
 
         // Ejemplo de uso manual de notificación
         // showSystemNotification('Sistema actualizado correctamente', 'success');

@@ -887,8 +887,8 @@ class BioInvernaderoDashboard {
             
         } catch (error) {
             console.error('Error cargando sensores:', error);
-            // Generar datos de ejemplo más realistas
-            this.generateSampleSensorsData();
+            // Sin datos de ejemplo: vaciar la lista para evitar alertas ficticias
+            this.sensorsData = [];
         }
     }
     
